@@ -91,6 +91,7 @@
     color: var(--gold);
     margin-top: 8px;
     opacity: 0.8;
+    padding: 0 20px 4px;
   }
 
   /* ───── Main invitation ───── */
@@ -388,6 +389,325 @@
     animation-delay: 5.2s;
   }
 
+  /* ─ Countdown Timer ─ */
+  .countdown-section {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 28px;
+    padding: 36px 24px;
+    background: var(--cream);
+    box-shadow: 0 8px 60px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
+    text-align: center;
+    opacity: 0;
+    animation: revealUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation-delay: 5.6s;
+  }
+
+  .countdown-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .countdown-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 68px;
+  }
+
+  .countdown-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 42px;
+    color: var(--dark);
+    line-height: 1;
+    transition: transform 0.3s ease;
+  }
+
+  .countdown-number.tick {
+    transform: scale(1.1);
+  }
+
+  .countdown-label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 7px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-top: 6px;
+  }
+
+  .countdown-separator {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 32px;
+    color: var(--gold);
+    align-self: flex-start;
+    margin-top: 4px;
+    opacity: 0.6;
+  }
+
+  /* ─ RSVP Form Section ─ */
+  .rsvp-section {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 28px;
+    padding: 40px 32px;
+    background: var(--cream);
+    box-shadow: 0 8px 60px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
+    text-align: center;
+    opacity: 0;
+    animation: revealUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation-delay: 6s;
+  }
+
+  .section-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 36px;
+    color: var(--dark);
+    margin-bottom: 4px;
+  }
+
+  .section-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+    text-align: left;
+  }
+
+  .form-label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 8px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--gold-light);
+    background: var(--warm-bg);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,169,110,0.1);
+  }
+
+  .form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23c9a96e' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 20px;
+    margin-top: 6px;
+  }
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .radio-option input[type="radio"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .radio-option input[type="radio"]:checked {
+    background: var(--gold);
+    box-shadow: inset 0 0 0 3px var(--cream);
+  }
+
+  .radio-option span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--dark);
+  }
+
+  .submit-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 14px 48px;
+    background: none;
+    border: 1.5px solid var(--gold);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    cursor: pointer;
+    transition: all 0.4s ease;
+  }
+
+  .submit-btn:hover {
+    background: var(--gold);
+    color: var(--cream);
+  }
+
+  .form-message {
+    margin-top: 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--gold);
+    display: none;
+  }
+
+  .form-message.show {
+    display: block;
+    animation: revealUp 0.6s ease forwards;
+  }
+
+  /* ─ Guest Book Section ─ */
+  .guestbook-section {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 28px;
+    margin-bottom: 40px;
+    padding: 40px 32px;
+    background: var(--cream);
+    box-shadow: 0 8px 60px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
+    text-align: center;
+    opacity: 0;
+    animation: revealUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation-delay: 6.4s;
+  }
+
+  .guestbook-entries {
+    margin-top: 24px;
+    margin-bottom: 28px;
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-light) transparent;
+  }
+
+  .guestbook-entries::-webkit-scrollbar {
+    width: 4px;
+  }
+  .guestbook-entries::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .guestbook-entries::-webkit-scrollbar-thumb {
+    background: var(--gold-light);
+    border-radius: 2px;
+  }
+
+  .gb-entry {
+    padding: 16px 0;
+    border-bottom: 0.5px solid var(--gold-light);
+    text-align: left;
+    animation: revealUp 0.5s ease forwards;
+  }
+
+  .gb-entry:last-child {
+    border-bottom: none;
+  }
+
+  .gb-name {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .gb-message {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--dark);
+    line-height: 1.6;
+  }
+
+  .gb-date {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 8px;
+    color: var(--soft);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  .gb-empty {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--soft);
+    padding: 20px 0;
+  }
+
+  .gb-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 24px auto 0;
+    width: 30%;
+  }
+
+  .gb-divider .divider-line {
+    animation: none;
+    transform: scaleX(1);
+  }
+
+  .gb-divider .divider-diamond {
+    animation: none;
+    transform: rotate(45deg) scale(1);
+    width: 4px;
+    height: 4px;
+  }
+
   /* ─ Floating particles ─ */
   .particles {
     position: fixed;
@@ -439,6 +759,9 @@
     .card { padding: 40px 24px; }
     .name--first, .name--second { font-size: 46px; }
     .detail-main { font-size: 16px; }
+    .countdown-unit { min-width: 56px; }
+    .countdown-number { font-size: 34px; }
+    .rsvp-section, .guestbook-section { padding: 32px 20px; }
   }
 
   @media (min-width: 600px) {
@@ -557,12 +880,156 @@
       <div class="footer-note anim">Dinner & Celebration to Follow</div>
     </div>
   </div>
+
+  <!-- Countdown Timer -->
+  <div class="countdown-section">
+    <div class="countdown-title">Counting Down to Forever</div>
+    <div class="countdown" id="countdown">
+      <div class="countdown-unit">
+        <div class="countdown-number" id="cd-days">---</div>
+        <div class="countdown-label">Days</div>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-unit">
+        <div class="countdown-number" id="cd-hours">--</div>
+        <div class="countdown-label">Hours</div>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-unit">
+        <div class="countdown-number" id="cd-mins">--</div>
+        <div class="countdown-label">Minutes</div>
+      </div>
+      <div class="countdown-separator">:</div>
+      <div class="countdown-unit">
+        <div class="countdown-number" id="cd-secs">--</div>
+        <div class="countdown-label">Seconds</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RSVP Form -->
+  <div class="rsvp-section">
+    <div class="section-title">RSVP</div>
+    <div class="section-subtitle">We would be honored by your presence</div>
+
+    <form id="rsvp-form">
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" class="form-input" name="name" required placeholder="Full Name">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" name="email" placeholder="your@email.com">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Will You Attend?</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="attending" value="yes" required>
+            <span>Joyfully Accept</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="attending" value="no">
+            <span>Regretfully Decline</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Number of Guests</label>
+        <select class="form-select" name="guests">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Dietary Restrictions</label>
+        <input type="text" class="form-input" name="dietary" placeholder="Any allergies or preferences">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Message for the Couple</label>
+        <textarea class="form-textarea" name="message" placeholder="Share your well wishes..."></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">Send RSVP</button>
+      <div class="form-message" id="rsvp-message"></div>
+    </form>
+  </div>
+
+  <!-- Guest Book -->
+  <div class="guestbook-section">
+    <div class="section-title">Guest Book</div>
+    <div class="section-subtitle">Leave your love & well wishes</div>
+
+    <div class="guestbook-entries" id="guestbook-entries">
+      <div class="gb-empty" id="gb-empty">Be the first to sign the guest book</div>
+    </div>
+
+    <div class="gb-divider">
+      <div class="divider-line"></div>
+      <div class="divider-diamond"></div>
+      <div class="divider-line"></div>
+    </div>
+
+    <form id="guestbook-form" style="margin-top: 24px;">
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" class="form-input" name="gb-name" required placeholder="Your Name">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Your Message</label>
+        <textarea class="form-textarea" name="gb-message" required placeholder="Write something beautiful..."></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">Sign Guest Book</button>
+      <div class="form-message" id="gb-message"></div>
+    </form>
+  </div>
 </div>
 
 <!-- Particles container -->
 <div class="particles" id="particles"></div>
 
+<!-- Firebase SDK for Guest Book -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
 <script>
+/* ═══════════════════════════════════════════
+   CONFIGURATION - UPDATE THESE VALUES
+   ═══════════════════════════════════════════ */
+
+// Wedding date: October 21, 2026 at 5:00 PM CDT
+const WEDDING_DATE = new Date('2026-10-21T17:00:00-05:00');
+
+// Formspree: Sign up at https://formspree.io, create a form,
+// and replace YOUR_FORM_ID with your actual form ID
+const FORMSPREE_ID = 'YOUR_FORM_ID';
+
+// Firebase: Go to https://console.firebase.google.com
+// 1. Create a project
+// 2. Create a Realtime Database (start in test mode)
+// 3. Copy your config here
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+/* ═══════════════════════════════════════════ */
+
+// ─── Envelope ───
 function openInvitation() {
   const envelope = document.getElementById('envelope');
   const invitation = document.getElementById('invitation');
@@ -573,9 +1040,192 @@ function openInvitation() {
     envelope.style.display = 'none';
     invitation.style.display = 'flex';
     createParticles();
+    startCountdown();
+    initGuestBook();
   }, 700);
 }
 
+// ─── Countdown Timer ───
+function startCountdown() {
+  function update() {
+    const now = new Date();
+    const diff = WEDDING_DATE - now;
+
+    if (diff <= 0) {
+      document.getElementById('cd-days').textContent = '0';
+      document.getElementById('cd-hours').textContent = '0';
+      document.getElementById('cd-mins').textContent = '0';
+      document.getElementById('cd-secs').textContent = '0';
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+
+    const daysEl = document.getElementById('cd-days');
+    const hoursEl = document.getElementById('cd-hours');
+    const minsEl = document.getElementById('cd-mins');
+    const secsEl = document.getElementById('cd-secs');
+
+    if (daysEl.textContent !== String(days)) { daysEl.textContent = days; tickAnim(daysEl); }
+    if (hoursEl.textContent !== String(hours)) { hoursEl.textContent = hours; tickAnim(hoursEl); }
+    if (minsEl.textContent !== String(mins)) { minsEl.textContent = mins; tickAnim(minsEl); }
+    secsEl.textContent = secs;
+    tickAnim(secsEl);
+  }
+
+  function tickAnim(el) {
+    el.classList.add('tick');
+    setTimeout(() => el.classList.remove('tick'), 300);
+  }
+
+  update();
+  setInterval(update, 1000);
+}
+
+// ─── RSVP Form (Formspree) ───
+document.getElementById('rsvp-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const btn = form.querySelector('.submit-btn');
+  const msg = document.getElementById('rsvp-message');
+
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  const data = new FormData(form);
+
+  try {
+    const res = await fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (res.ok) {
+      msg.textContent = 'Thank you! Your RSVP has been received.';
+      msg.classList.add('show');
+      form.reset();
+      btn.textContent = 'Sent!';
+      setTimeout(() => { btn.textContent = 'Send RSVP'; btn.disabled = false; }, 3000);
+    } else {
+      throw new Error('Failed');
+    }
+  } catch (err) {
+    msg.textContent = 'Something went wrong. Please try again.';
+    msg.style.color = '#c27070';
+    msg.classList.add('show');
+    btn.textContent = 'Send RSVP';
+    btn.disabled = false;
+  }
+});
+
+// ─── Guest Book (Firebase) ───
+let db = null;
+
+function initGuestBook() {
+  if (firebaseConfig.apiKey === 'YOUR_API_KEY') {
+    console.log('Guest book: Firebase not configured yet. See config section in index.html');
+    return;
+  }
+
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    loadGuestBookEntries();
+  } catch (err) {
+    console.error('Firebase init error:', err);
+  }
+}
+
+function loadGuestBookEntries() {
+  if (!db) return;
+
+  const ref = db.ref('guestbook');
+  ref.orderByChild('timestamp').on('value', (snapshot) => {
+    const container = document.getElementById('guestbook-entries');
+    const emptyMsg = document.getElementById('gb-empty');
+
+    // Clear existing entries (keep empty message)
+    container.querySelectorAll('.gb-entry').forEach(el => el.remove());
+
+    if (!snapshot.exists()) {
+      emptyMsg.style.display = 'block';
+      return;
+    }
+
+    emptyMsg.style.display = 'none';
+    const entries = [];
+    snapshot.forEach((child) => {
+      entries.push(child.val());
+    });
+
+    // Show newest first
+    entries.reverse().forEach((entry) => {
+      const div = document.createElement('div');
+      div.className = 'gb-entry';
+      const date = new Date(entry.timestamp);
+      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      div.innerHTML = `
+        <div class="gb-name">${escapeHtml(entry.name)}</div>
+        <div class="gb-message">"${escapeHtml(entry.message)}"</div>
+        <div class="gb-date">${dateStr}</div>
+      `;
+      container.appendChild(div);
+    });
+  });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+document.getElementById('guestbook-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const btn = form.querySelector('.submit-btn');
+  const msg = document.getElementById('gb-message');
+  const name = form.querySelector('[name="gb-name"]').value.trim();
+  const message = form.querySelector('[name="gb-message"]').value.trim();
+
+  if (!name || !message) return;
+
+  if (!db) {
+    msg.textContent = 'Guest book is being set up. Check back soon!';
+    msg.classList.add('show');
+    return;
+  }
+
+  btn.textContent = 'Signing...';
+  btn.disabled = true;
+
+  const ref = db.ref('guestbook');
+  ref.push({
+    name: name,
+    message: message,
+    timestamp: Date.now()
+  }).then(() => {
+    msg.textContent = 'Thank you for signing our guest book!';
+    msg.classList.add('show');
+    form.reset();
+    btn.textContent = 'Signed!';
+    setTimeout(() => { btn.textContent = 'Sign Guest Book'; btn.disabled = false; msg.classList.remove('show'); }, 3000);
+  }).catch((err) => {
+    msg.textContent = 'Something went wrong. Please try again.';
+    msg.style.color = '#c27070';
+    msg.classList.add('show');
+    btn.textContent = 'Sign Guest Book';
+    btn.disabled = false;
+  });
+});
+
+// ─── Particles ───
 function createParticles() {
   const container = document.getElementById('particles');
   const count = 30;
@@ -592,7 +1242,6 @@ function createParticles() {
     p.style.animation = `particleFall ${6 + Math.random() * 6}s ease-in forwards`;
     p.style.animation += `, shimmer ${2 + Math.random() * 2}s ease-in-out infinite`;
 
-    // Some particles are slightly different shapes
     if (Math.random() > 0.6) {
       p.style.borderRadius = '0';
       p.style.transform = 'rotate(45deg)';
@@ -601,7 +1250,6 @@ function createParticles() {
     container.appendChild(p);
   }
 
-  // Second wave
   setTimeout(() => {
     for (let i = 0; i < 15; i++) {
       const p = document.createElement('div');
