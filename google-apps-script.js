@@ -92,8 +92,15 @@ function getOrCreateSheet(name, headers) {
 
 function submitRSVP(params) {
   var sheet = getOrCreateSheet('RSVPs', [
-    'Timestamp', 'Name', 'Email', 'Attending', 'Guests', 'Dietary', 'Message'
+    'Timestamp', 'Name', 'Email', 'Attending', 'Guests', 'Guest Names', 'Dietary', 'Message'
   ]);
+
+  // Collect guest names
+  var guestNames = [];
+  for (var i = 2; i <= 6; i++) {
+    var gn = params['guest' + i + '_name'];
+    if (gn) guestNames.push(gn);
+  }
 
   sheet.appendRow([
     new Date().toLocaleString(),
@@ -101,6 +108,7 @@ function submitRSVP(params) {
     params.email || '',
     params.attending || '',
     params.guests || '1',
+    guestNames.join(', '),
     params.dietary || '',
     params.message || ''
   ]);
