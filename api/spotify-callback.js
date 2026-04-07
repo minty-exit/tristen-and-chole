@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        name: "Tristen & Chloe' Wedding",
+        name: "Tristen and Chloe's Wedding",
         description: 'Song requests from our wedding guests',
         public: true
       })
