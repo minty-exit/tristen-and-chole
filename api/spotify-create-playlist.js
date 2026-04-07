@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
 
   if (!refreshToken) {
-    return res.status(500).send('Missing SPOTIFY_REFRESH_TOKEN environment variable');
+    return res.status(500).send('Missing SPOTIFY_REFRESH_TOKEN environment variable. Add it in Vercel Settings > Environment Variables.');
   }
 
   try {
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const tokenData = await tokenRes.json();
 
     if (!tokenData.access_token) {
-      return res.status(500).send(`Token error: ${JSON.stringify(tokenData)}`);
+      return res.status(500).send(`<pre>Token error:\n${JSON.stringify(tokenData, null, 2)}</pre>`);
     }
 
     // Get user ID
@@ -31,6 +31,10 @@ export default async function handler(req, res) {
       headers: { 'Authorization': 'Bearer ' + tokenData.access_token }
     });
     const userData = await userRes.json();
+
+    if (!userData.id) {
+      return res.status(500).send(`<pre>User error:\n${JSON.stringify(userData, null, 2)}</pre>`);
+    }
 
     // Create playlist
     const playlistRes = await fetch(`https://api.spotify.com/v1/users/${userData.id}/playlists`, {
@@ -46,6 +50,10 @@ export default async function handler(req, res) {
       })
     });
     const playlistData = await playlistRes.json();
+
+    if (!playlistData.id) {
+      return res.status(500).send(`<pre>Playlist creation error:\n${JSON.stringify(playlistData, null, 2)}</pre>`);
+    }
 
     res.status(200).send(`
       <html>
@@ -63,6 +71,6 @@ export default async function handler(req, res) {
       </html>
     `);
   } catch (err) {
-    res.status(500).send(`Error: ${err.message}`);
+    res.status(500).send(`<pre>Error: ${err.message}\n${err.stack}</pre>`);
   }
 }
