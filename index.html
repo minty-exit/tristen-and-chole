@@ -1557,6 +1557,10 @@ async function addSong(song, artist, spotifyId, albumArt) {
   const msg = document.getElementById('song-message');
 
   try {
+    // Add to Spotify playlist
+    fetch('/api/spotify?add=' + spotifyId).catch(() => {});
+
+    // Log to Google Sheet
     if (API_URL !== 'YOUR_GOOGLE_SCRIPT_URL') {
       await apiCall({ action: 'submitSongRequest', name, song, artist, spotifyId, albumArt });
     }

@@ -1,0 +1,25 @@
+1. Google Sheet
+
+Go to sheets.google.com
+Create a new blank spreadsheet
+Name it "Tristen & Chloe Wedding"
+Give me the sheet URL (or just the sheet ID from the URL)
+2. Cloudinary
+
+Go to cloudinary.com and sign up free
+Once in the dashboard, you'll see your Cloud Name (top left)
+Then go to Settings > Upload > scroll to Upload presets > click Add upload preset
+Set Signing Mode to Unsigned
+Give it a name like wedding
+Save it
+Give me the Cloud Name and Upload Preset name
+3. Spotify Developer
+
+Go to developer.spotify.com/dashboard
+Log in with any Spotify account
+Click Create App
+Name: anything (like "Wedding DJ")
+Redirect URI: put https://minty-exit.github.io/tristen-and-chole/
+Check Web API
+Give me the Client ID from the app dashboard
+Drop the values here as you get them and I'll start building.
