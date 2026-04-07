@@ -1042,6 +1042,93 @@
     padding: 20px 0;
   }
 
+  /* ───── Carousel ───── */
+  .carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border-radius: 2px;
+  }
+
+  .carousel-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .carousel-slide {
+    min-width: 100%;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .carousel-slide img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    display: block;
+  }
+
+  .carousel-slide-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 12px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.5));
+    font-family: 'Montserrat', sans-serif;
+    font-size: 9px;
+    color: #fff;
+    letter-spacing: 1px;
+    text-align: left;
+  }
+
+  .carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.8);
+    color: var(--dark);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 2;
+  }
+
+  .carousel-btn:hover { background: #fff; }
+  .carousel-btn--left { left: 10px; }
+  .carousel-btn--right { right: 10px; }
+
+  .carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 0 4px;
+  }
+
+  .carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    border: 1px solid var(--gold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .carousel-dot.active {
+    background: var(--gold);
+    transform: scale(1.3);
+  }
+
   /* ───── Floating particles ───── */
   .particles {
     position: fixed;
@@ -1300,6 +1387,14 @@
     <div class="upload-progress" id="upload-progress">
       <div class="progress-text" id="progress-text">Uploading...</div>
       <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    </div>
+
+    <!-- Carousel -->
+    <div class="carousel" id="carousel" style="display:none;">
+      <div class="carousel-track" id="carousel-track"></div>
+      <button class="carousel-btn carousel-btn--left" onclick="carouselPrev()">&#8249;</button>
+      <button class="carousel-btn carousel-btn--right" onclick="carouselNext()">&#8250;</button>
+      <div class="carousel-dots" id="carousel-dots"></div>
     </div>
 
     <div class="photo-grid" id="photo-grid"></div>
@@ -1763,6 +1858,9 @@ function addPhotoToGrid(url, name) {
     <img src="${thumb}" alt="" loading="lazy">
     <div class="photo-overlay"><span>${escapeHtml(name)}</span></div>`;
   grid.insertBefore(item, grid.firstChild);
+
+  // Also add to carousel
+  addToCarousel(url, name);
 }
 
 async function loadPhotos() {
@@ -1775,6 +1873,68 @@ async function loadPhotos() {
     }
   } catch (err) { console.log('Photos load error:', err); }
 }
+
+// ─── Carousel ───
+let carouselIndex = 0;
+let carouselPhotos = [];
+let carouselAutoPlay = null;
+
+function addToCarousel(url, name) {
+  carouselPhotos.push({ url, name });
+  const carousel = document.getElementById('carousel');
+  const track = document.getElementById('carousel-track');
+  const dots = document.getElementById('carousel-dots');
+
+  carousel.style.display = 'block';
+
+  const slide = document.createElement('div');
+  slide.className = 'carousel-slide';
+  slide.onclick = () => openLightbox(url, name);
+  slide.innerHTML = `
+    <img src="${url.replace('/upload/', '/upload/c_fill,w_800,h_600/')}" alt="" loading="lazy">
+    <div class="carousel-slide-caption">${escapeHtml(name)}</div>`;
+  track.appendChild(slide);
+
+  const dot = document.createElement('div');
+  dot.className = 'carousel-dot' + (carouselPhotos.length === 1 ? ' active' : '');
+  dot.onclick = () => goToSlide(carouselPhotos.length - 1);
+  dots.appendChild(dot);
+
+  // Start auto-play when we have 2+ photos
+  if (carouselPhotos.length === 2 && !carouselAutoPlay) {
+    carouselAutoPlay = setInterval(carouselNext, 4000);
+  }
+}
+
+function goToSlide(idx) {
+  carouselIndex = idx;
+  if (carouselIndex >= carouselPhotos.length) carouselIndex = 0;
+  if (carouselIndex < 0) carouselIndex = carouselPhotos.length - 1;
+
+  document.getElementById('carousel-track').style.transform = `translateX(-${carouselIndex * 100}%)`;
+
+  document.querySelectorAll('.carousel-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === carouselIndex);
+  });
+}
+
+function carouselNext() { goToSlide(carouselIndex + 1); }
+function carouselPrev() { goToSlide(carouselIndex - 1); }
+
+// Swipe support
+(function() {
+  let startX = 0;
+  const el = document.getElementById('carousel');
+  el.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+  el.addEventListener('touchend', (e) => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) carouselNext(); else carouselPrev();
+      // Reset auto-play timer on swipe
+      if (carouselAutoPlay) { clearInterval(carouselAutoPlay); carouselAutoPlay = setInterval(carouselNext, 4000); }
+    }
+  }, { passive: true });
+})();
 
 // ─── Lightbox ───
 function openLightbox(url, caption) {
