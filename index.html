@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Tristen & Chloe</title>
+<title>Tristen & Chloe'</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Montserrat:wght@200;300;400;500&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
   :root {
     --gold: #c9a96e;
     --gold-light: rgba(201,169,110,0.25);
+    --gold-dark: #a8872e;
     --cream: #fffef9;
     --warm-bg: #f5f0eb;
     --dark: #1a1512;
@@ -18,6 +19,10 @@
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+  }
 
   html, body {
     width: 100%;
@@ -94,7 +99,7 @@
     padding: 0 20px 4px;
   }
 
-  /* ───── Main invitation ───── */
+  /* ───── Main invitation scroll ───── */
   .invitation-scroll {
     width: 100%;
     min-height: 100vh;
@@ -106,6 +111,57 @@
     background: linear-gradient(180deg, var(--warm-bg) 0%, #ede7df 50%, var(--warm-bg) 100%);
   }
 
+  /* ───── Section navigation dots ───── */
+  .nav-dots {
+    position: fixed;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .nav-dots.visible { opacity: 1; }
+
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    border: 1px solid var(--gold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .nav-dot.active {
+    background: var(--gold);
+    transform: scale(1.3);
+  }
+
+  .nav-dot-label {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .nav-dot:hover .nav-dot-label { opacity: 1; }
+
+  /* ───── Cards ───── */
   .card {
     width: 100%;
     max-width: 420px;
@@ -136,11 +192,27 @@
     animation-delay: 1s;
   }
 
-  @keyframes borderFade {
-    to { opacity: 1; }
+  @keyframes borderFade { to { opacity: 1; } }
+
+  .section-card {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 28px;
+    padding: 40px 32px;
+    background: var(--cream);
+    box-shadow: 0 8px 60px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
+    text-align: center;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
   }
 
-  /* Corner flourishes */
+  .section-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ───── Corner flourishes ───── */
   .flourish {
     position: absolute;
     width: 56px;
@@ -153,29 +225,23 @@
   .flourish--bl { bottom: 16px; left: 16px; transform: scaleY(-1); animation-delay: 1.6s; }
   .flourish--br { bottom: 16px; right: 16px; transform: scale(-1,-1); animation-delay: 1.8s; }
 
-  @keyframes flourishIn {
-    from { opacity: 0; transform: scale(0.5); }
-    to { opacity: 0.45; }
-  }
+  @keyframes flourishIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 0.45; } }
   .flourish--tr { animation-name: flourishInFlipX; }
   .flourish--bl { animation-name: flourishInFlipY; }
   .flourish--br { animation-name: flourishInFlipXY; }
   @keyframes flourishInFlipX { from { opacity: 0; transform: scaleX(-1) scale(0.5); } to { opacity: 0.45; transform: scaleX(-1); } }
   @keyframes flourishInFlipY { from { opacity: 0; transform: scaleY(-1) scale(0.5); } to { opacity: 0.45; transform: scaleY(-1); } }
   @keyframes flourishInFlipXY { from { opacity: 0; transform: scale(-1,-1) scale(0.5); } to { opacity: 0.45; transform: scale(-1,-1); } }
-
   .flourish svg { width: 100%; height: 100%; }
 
-  /* Content animations */
+  /* ───── Content animations ───── */
   .anim {
     opacity: 0;
     transform: translateY(20px);
     animation: revealUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
   }
 
-  @keyframes revealUp {
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes revealUp { to { opacity: 1; transform: translateY(0); } }
 
   .content { text-align: center; position: relative; z-index: 1; }
 
@@ -203,10 +269,7 @@
   }
 
   /* ─ Names ─ */
-  .names {
-    margin-bottom: 32px;
-    animation-delay: 1.2s;
-  }
+  .names { margin-bottom: 32px; animation-delay: 1.2s; }
 
   .name {
     font-family: 'Great Vibes', cursive;
@@ -251,7 +314,20 @@
     to { opacity: 1; transform: scale(1) rotate(0); }
   }
 
-  /* ─ Divider ─ */
+  .names::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto;
+    animation: underlineGrow 1.5s ease forwards;
+    animation-delay: 2.2s;
+  }
+
+  @keyframes underlineGrow { to { width: 60%; } }
+
+  /* ─ Dividers ─ */
   .divider {
     display: flex;
     align-items: center;
@@ -275,9 +351,7 @@
   .divider--top .divider-line { animation-delay: 2.6s; }
   .divider--bottom .divider-line { animation-delay: 4.4s; }
 
-  @keyframes lineGrow {
-    to { transform: scaleX(1); }
-  }
+  @keyframes lineGrow { to { transform: scaleX(1); } }
 
   .divider-diamond {
     width: 6px;
@@ -290,14 +364,10 @@
   .divider--top .divider-diamond { animation-delay: 2.8s; }
   .divider--bottom .divider-diamond { animation-delay: 4.6s; width: 5px; height: 5px; }
 
-  @keyframes diamondPop {
-    to { transform: rotate(45deg) scale(1); }
-  }
+  @keyframes diamondPop { to { transform: rotate(45deg) scale(1); } }
 
   /* ─ Details ─ */
-  .detail-block {
-    margin-bottom: 22px;
-  }
+  .detail-block { margin-bottom: 22px; }
 
   .detail-label {
     font-family: 'Montserrat', sans-serif;
@@ -333,16 +403,9 @@
     letter-spacing: 0.5px;
   }
 
-  .placeholder {
-    color: #a8872e;
-    font-style: italic;
-  }
+  .placeholder { color: var(--gold-dark); font-style: italic; }
 
-  .venue-name {
-    font-weight: 500;
-    font-size: 19px;
-    color: var(--dark);
-  }
+  .venue-name { font-weight: 500; font-size: 19px; color: var(--dark); }
 
   .venue-address {
     font-family: 'Montserrat', sans-serif;
@@ -358,15 +421,13 @@
   .time-block { animation-delay: 3.2s; }
   .venue-block { animation-delay: 3.5s; }
 
-  /* ─ RSVP ─ */
-  .rsvp {
-    animation-delay: 4.8s;
-  }
+  /* ─ RSVP inline ─ */
+  .rsvp { animation-delay: 4.8s; }
 
   .rsvp-label {
     font-family: 'Montserrat', sans-serif;
     font-weight: 400;
-    font-size: 8px;
+    font-size: 9px;
     letter-spacing: 4px;
     text-transform: uppercase;
     color: var(--soft);
@@ -389,20 +450,7 @@
     animation-delay: 5.2s;
   }
 
-  /* ─ Countdown Timer ─ */
-  .countdown-section {
-    width: 100%;
-    max-width: 420px;
-    margin-top: 28px;
-    padding: 36px 24px;
-    background: var(--cream);
-    box-shadow: 0 8px 60px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
-    text-align: center;
-    opacity: 0;
-    animation: revealUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-    animation-delay: 5.6s;
-  }
-
+  /* ───── Countdown ───── */
   .countdown-title {
     font-family: 'Montserrat', sans-serif;
     font-weight: 300;
@@ -435,9 +483,7 @@
     transition: transform 0.3s ease;
   }
 
-  .countdown-number.tick {
-    transform: scale(1.1);
-  }
+  .countdown-number.tick { transform: scale(1.1); }
 
   .countdown-label {
     font-family: 'Montserrat', sans-serif;
@@ -459,20 +505,7 @@
     opacity: 0.6;
   }
 
-  /* ─ RSVP Form Section ─ */
-  .rsvp-section {
-    width: 100%;
-    max-width: 420px;
-    margin-top: 28px;
-    padding: 40px 32px;
-    background: var(--cream);
-    box-shadow: 0 8px 60px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
-    text-align: center;
-    opacity: 0;
-    animation: revealUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-    animation-delay: 6s;
-  }
-
+  /* ───── Section titles ───── */
   .section-title {
     font-family: 'Great Vibes', cursive;
     font-size: 36px;
@@ -490,6 +523,7 @@
     margin-bottom: 28px;
   }
 
+  /* ───── Forms ───── */
   .form-group {
     margin-bottom: 18px;
     text-align: left;
@@ -498,7 +532,7 @@
   .form-label {
     font-family: 'Montserrat', sans-serif;
     font-weight: 400;
-    font-size: 8px;
+    font-size: 9px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--soft);
@@ -512,10 +546,12 @@
     border: 1px solid var(--gold-light);
     background: var(--warm-bg);
     font-family: 'Cormorant Garamond', serif;
-    font-size: 15px;
+    font-size: 16px;
     color: var(--dark);
     outline: none;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 0;
+    -webkit-appearance: none;
   }
 
   .form-input:focus, .form-select:focus, .form-textarea:focus {
@@ -540,6 +576,7 @@
     display: flex;
     gap: 20px;
     margin-top: 6px;
+    flex-wrap: wrap;
   }
 
   .radio-option {
@@ -551,13 +588,15 @@
 
   .radio-option input[type="radio"] {
     appearance: none;
-    width: 18px;
-    height: 18px;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
     border: 1.5px solid var(--gold);
     border-radius: 50%;
     cursor: pointer;
     position: relative;
     transition: all 0.2s ease;
+    flex-shrink: 0;
   }
 
   .radio-option input[type="radio"]:checked {
@@ -567,14 +606,14 @@
 
   .radio-option span {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 15px;
+    font-size: 16px;
     color: var(--dark);
   }
 
   .submit-btn {
     display: inline-block;
     margin-top: 10px;
-    padding: 14px 48px;
+    padding: 16px 48px;
     background: none;
     border: 1.5px solid var(--gold);
     font-family: 'Montserrat', sans-serif;
@@ -585,9 +624,10 @@
     color: var(--gold);
     cursor: pointer;
     transition: all 0.4s ease;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .submit-btn:hover {
+  .submit-btn:hover, .submit-btn:active {
     background: var(--gold);
     color: var(--cream);
   }
@@ -596,7 +636,7 @@
     margin-top: 16px;
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 15px;
+    font-size: 16px;
     color: var(--gold);
     display: none;
   }
@@ -606,21 +646,9 @@
     animation: revealUp 0.6s ease forwards;
   }
 
-  /* ─ Guest Book Section ─ */
-  .guestbook-section {
-    width: 100%;
-    max-width: 420px;
-    margin-top: 28px;
-    margin-bottom: 40px;
-    padding: 40px 32px;
-    background: var(--cream);
-    box-shadow: 0 8px 60px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
-    text-align: center;
-    opacity: 0;
-    animation: revealUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-    animation-delay: 6.4s;
-  }
+  .form-message.error { color: #c27070; }
 
+  /* ───── Guest Book ───── */
   .guestbook-entries {
     margin-top: 24px;
     margin-bottom: 28px;
@@ -630,16 +658,9 @@
     scrollbar-color: var(--gold-light) transparent;
   }
 
-  .guestbook-entries::-webkit-scrollbar {
-    width: 4px;
-  }
-  .guestbook-entries::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .guestbook-entries::-webkit-scrollbar-thumb {
-    background: var(--gold-light);
-    border-radius: 2px;
-  }
+  .guestbook-entries::-webkit-scrollbar { width: 4px; }
+  .guestbook-entries::-webkit-scrollbar-track { background: transparent; }
+  .guestbook-entries::-webkit-scrollbar-thumb { background: var(--gold-light); border-radius: 2px; }
 
   .gb-entry {
     padding: 16px 0;
@@ -648,9 +669,7 @@
     animation: revealUp 0.5s ease forwards;
   }
 
-  .gb-entry:last-child {
-    border-bottom: none;
-  }
+  .gb-entry:last-child { border-bottom: none; }
 
   .gb-name {
     font-family: 'Montserrat', sans-serif;
@@ -665,7 +684,7 @@
   .gb-message {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 15px;
+    font-size: 16px;
     color: var(--dark);
     line-height: 1.6;
   }
@@ -682,12 +701,12 @@
   .gb-empty {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 14px;
+    font-size: 15px;
     color: var(--soft);
     padding: 20px 0;
   }
 
-  .gb-divider {
+  .mini-divider {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -696,19 +715,326 @@
     width: 30%;
   }
 
-  .gb-divider .divider-line {
-    animation: none;
-    transform: scaleX(1);
+  .mini-divider .divider-line {
+    flex: 1; height: 0.5px; background: var(--gold); transform: scaleX(1);
   }
 
-  .gb-divider .divider-diamond {
-    animation: none;
-    transform: rotate(45deg) scale(1);
-    width: 4px;
-    height: 4px;
+  .mini-divider .divider-diamond {
+    width: 4px; height: 4px; background: var(--gold);
+    transform: rotate(45deg); flex-shrink: 0;
   }
 
-  /* ─ Floating particles ─ */
+  /* ───── Song Requests / Spotify ───── */
+  .spotify-search-wrap {
+    position: relative;
+    margin-bottom: 18px;
+  }
+
+  .spotify-search-wrap .form-input {
+    padding-right: 40px;
+  }
+
+  .search-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    opacity: 0.4;
+  }
+
+  .search-results {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 18px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-light) transparent;
+  }
+
+  .search-results::-webkit-scrollbar { width: 4px; }
+  .search-results::-webkit-scrollbar-thumb { background: var(--gold-light); border-radius: 2px; }
+
+  .song-result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 0.5px solid var(--gold-light);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .song-result:hover, .song-result:active {
+    background: var(--warm-bg);
+  }
+
+  .song-result img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .song-info {
+    text-align: left;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .song-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .song-artist {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--soft);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .song-add-btn {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--gold);
+    background: none;
+    color: var(--gold);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .song-add-btn:hover { background: var(--gold); color: var(--cream); }
+
+  .song-queue {
+    margin-top: 24px;
+    text-align: left;
+  }
+
+  .queue-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .queue-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 0.5px solid var(--gold-light);
+    animation: revealUp 0.4s ease forwards;
+  }
+
+  .queue-item img {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+  }
+
+  .queue-item .song-info { flex: 1; }
+
+  .queue-item .song-title { font-size: 14px; }
+  .queue-item .song-artist { font-size: 9px; }
+
+  .queue-requester {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 8px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  /* ───── Photo Gallery ───── */
+  .upload-zone {
+    border: 2px dashed var(--gold-light);
+    border-radius: 4px;
+    padding: 32px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--gold);
+    background: rgba(201,169,110,0.05);
+  }
+
+  .upload-zone-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 12px;
+    opacity: 0.5;
+  }
+
+  .upload-zone-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+
+  .upload-zone-hint {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 9px;
+    color: var(--soft);
+    margin-top: 6px;
+  }
+
+  .upload-progress {
+    display: none;
+    margin-bottom: 20px;
+  }
+
+  .upload-progress.show { display: block; }
+
+  .progress-bar-wrap {
+    width: 100%;
+    height: 3px;
+    background: var(--gold-light);
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--gold);
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-top: 20px;
+  }
+
+  .photo-grid-item {
+    aspect-ratio: 1;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    animation: revealUp 0.4s ease forwards;
+  }
+
+  .photo-grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .photo-grid-item:hover img { transform: scale(1.05); }
+
+  .photo-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 4px 6px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.5));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .photo-grid-item:hover .photo-overlay { opacity: 1; }
+
+  .photo-overlay span {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 8px;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .lightbox.open { display: flex; }
+
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: #fff;
+    opacity: 0.7;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  .lightbox-caption {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #fff;
+    opacity: 0.8;
+    text-align: center;
+  }
+
+  .photo-empty {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--soft);
+    padding: 20px 0;
+  }
+
+  /* ───── Floating particles ───── */
   .particles {
     position: fixed;
     inset: 0;
@@ -733,158 +1059,104 @@
     100% { opacity: 0; transform: translateY(100vh) scale(0.3); }
   }
 
-  /* Shimmer on gold elements */
   @keyframes shimmer {
     0%, 100% { filter: brightness(1); }
     50% { filter: brightness(1.15); }
   }
 
-  .names::after {
-    content: '';
-    display: block;
-    width: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 0 auto;
-    animation: underlineGrow 1.5s ease forwards;
-    animation-delay: 2.2s;
-  }
-
-  @keyframes underlineGrow {
-    to { width: 60%; }
-  }
-
-  /* Responsive */
+  /* ───── Responsive ───── */
   @media (max-width: 380px) {
     .card { padding: 40px 24px; }
+    .section-card { padding: 32px 20px; }
     .name--first, .name--second { font-size: 46px; }
-    .detail-main { font-size: 16px; }
+    .detail-main { font-size: 18px; }
     .countdown-unit { min-width: 56px; }
     .countdown-number { font-size: 34px; }
-    .rsvp-section, .guestbook-section { padding: 32px 20px; }
+    .photo-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
   @media (min-width: 600px) {
     .name--first, .name--second { font-size: 64px; }
+    .photo-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .nav-dots { display: none; }
   }
 </style>
 </head>
 <body>
 
-<!-- Envelope tap screen -->
+<!-- ═══ Envelope ═══ -->
 <div class="envelope-screen" id="envelope" onclick="openInvitation()">
   <svg class="envelope-icon" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="8" y="25" width="74" height="50" rx="3" fill="none" stroke="#c9a96e" stroke-width="1.5"/>
     <path d="M8 28 L45 55 L82 28" stroke="#c9a96e" stroke-width="1.5" fill="none"/>
     <path d="M8 75 L35 52" stroke="#c9a96e" stroke-width="1" opacity="0.4"/>
     <path d="M82 75 L55 52" stroke="#c9a96e" stroke-width="1" opacity="0.4"/>
-    <!-- Flap -->
     <path d="M8 25 L45 5 L82 25" stroke="#c9a96e" stroke-width="1.5" fill="var(--warm-bg)" opacity="0.9"/>
-    <!-- Heart seal -->
     <path d="M45 18 C45 15, 40 12, 40 16 C40 19, 45 23, 45 23 C45 23, 50 19, 50 16 C50 12, 45 15, 45 18Z" fill="#c9a96e" opacity="0.7"/>
   </svg>
   <div class="envelope-text">Tap to Open</div>
   <div class="envelope-subtitle">You're Invited</div>
 </div>
 
-<!-- Invitation content -->
+<!-- ═══ Navigation Dots ═══ -->
+<div class="nav-dots" id="navDots">
+  <div class="nav-dot active" onclick="scrollToSection('invite')"><span class="nav-dot-label">Invitation</span></div>
+  <div class="nav-dot" onclick="scrollToSection('countdown')"><span class="nav-dot-label">Countdown</span></div>
+  <div class="nav-dot" onclick="scrollToSection('rsvp-section')"><span class="nav-dot-label">RSVP</span></div>
+  <div class="nav-dot" onclick="scrollToSection('guestbook')"><span class="nav-dot-label">Guest Book</span></div>
+  <div class="nav-dot" onclick="scrollToSection('music')"><span class="nav-dot-label">Music</span></div>
+  <div class="nav-dot" onclick="scrollToSection('photos')"><span class="nav-dot-label">Photos</span></div>
+</div>
+
+<!-- ═══ Invitation Content ═══ -->
 <div class="invitation-scroll" id="invitation" style="display:none;">
-  <div class="card">
-    <!-- Corner flourishes -->
-    <div class="flourish flourish--tl">
-      <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 52 C4 26, 26 4, 52 4" stroke="#c9a96e" stroke-width="0.8" fill="none"/>
-        <path d="M4 40 C4 18, 18 4, 40 4" stroke="#c9a96e" stroke-width="0.5" fill="none"/>
-        <path d="M12 52 C12 30, 30 12, 52 12" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.5"/>
-        <circle cx="8" cy="8" r="2" fill="#c9a96e" opacity="0.35"/>
-        <circle cx="4" cy="18" r="1" fill="#c9a96e" opacity="0.2"/>
-        <circle cx="18" cy="4" r="1" fill="#c9a96e" opacity="0.2"/>
-      </svg>
-    </div>
-    <div class="flourish flourish--tr">
-      <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 52 C4 26, 26 4, 52 4" stroke="#c9a96e" stroke-width="0.8" fill="none"/>
-        <path d="M4 40 C4 18, 18 4, 40 4" stroke="#c9a96e" stroke-width="0.5" fill="none"/>
-        <path d="M12 52 C12 30, 30 12, 52 12" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.5"/>
-        <circle cx="8" cy="8" r="2" fill="#c9a96e" opacity="0.35"/>
-        <circle cx="4" cy="18" r="1" fill="#c9a96e" opacity="0.2"/>
-        <circle cx="18" cy="4" r="1" fill="#c9a96e" opacity="0.2"/>
-      </svg>
-    </div>
-    <div class="flourish flourish--bl">
-      <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 52 C4 26, 26 4, 52 4" stroke="#c9a96e" stroke-width="0.8" fill="none"/>
-        <path d="M4 40 C4 18, 18 4, 40 4" stroke="#c9a96e" stroke-width="0.5" fill="none"/>
-        <path d="M12 52 C12 30, 30 12, 52 12" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.5"/>
-        <circle cx="8" cy="8" r="2" fill="#c9a96e" opacity="0.35"/>
-        <circle cx="4" cy="18" r="1" fill="#c9a96e" opacity="0.2"/>
-        <circle cx="18" cy="4" r="1" fill="#c9a96e" opacity="0.2"/>
-      </svg>
-    </div>
-    <div class="flourish flourish--br">
-      <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 52 C4 26, 26 4, 52 4" stroke="#c9a96e" stroke-width="0.8" fill="none"/>
-        <path d="M4 40 C4 18, 18 4, 40 4" stroke="#c9a96e" stroke-width="0.5" fill="none"/>
-        <path d="M12 52 C12 30, 30 12, 52 12" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.5"/>
-        <circle cx="8" cy="8" r="2" fill="#c9a96e" opacity="0.35"/>
-        <circle cx="4" cy="18" r="1" fill="#c9a96e" opacity="0.2"/>
-        <circle cx="18" cy="4" r="1" fill="#c9a96e" opacity="0.2"/>
-      </svg>
-    </div>
+
+  <!-- ─── Invitation Card ─── -->
+  <div class="card" id="invite">
+    <div class="flourish flourish--tl"><svg viewBox="0 0 56 56" fill="none"><path d="M4 52 C4 26, 26 4, 52 4" stroke="#c9a96e" stroke-width="0.8" fill="none"/><path d="M4 40 C4 18, 18 4, 40 4" stroke="#c9a96e" stroke-width="0.5" fill="none"/><path d="M12 52 C12 30, 30 12, 52 12" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.5"/><circle cx="8" cy="8" r="2" fill="#c9a96e" opacity="0.35"/><circle cx="4" cy="18" r="1" fill="#c9a96e" opacity="0.2"/><circle cx="18" cy="4" r="1" fill="#c9a96e" opacity="0.2"/></svg></div>
+    <div class="flourish flourish--tr"><svg viewBox="0 0 56 56" fill="none"><path d="M4 52 C4 26, 26 4, 52 4" stroke="#c9a96e" stroke-width="0.8" fill="none"/><path d="M4 40 C4 18, 18 4, 40 4" stroke="#c9a96e" stroke-width="0.5" fill="none"/><path d="M12 52 C12 30, 30 12, 52 12" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.5"/><circle cx="8" cy="8" r="2" fill="#c9a96e" opacity="0.35"/><circle cx="4" cy="18" r="1" fill="#c9a96e" opacity="0.2"/><circle cx="18" cy="4" r="1" fill="#c9a96e" opacity="0.2"/></svg></div>
+    <div class="flourish flourish--bl"><svg viewBox="0 0 56 56" fill="none"><path d="M4 52 C4 26, 26 4, 52 4" stroke="#c9a96e" stroke-width="0.8" fill="none"/><path d="M4 40 C4 18, 18 4, 40 4" stroke="#c9a96e" stroke-width="0.5" fill="none"/><path d="M12 52 C12 30, 30 12, 52 12" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.5"/><circle cx="8" cy="8" r="2" fill="#c9a96e" opacity="0.35"/><circle cx="4" cy="18" r="1" fill="#c9a96e" opacity="0.2"/><circle cx="18" cy="4" r="1" fill="#c9a96e" opacity="0.2"/></svg></div>
+    <div class="flourish flourish--br"><svg viewBox="0 0 56 56" fill="none"><path d="M4 52 C4 26, 26 4, 52 4" stroke="#c9a96e" stroke-width="0.8" fill="none"/><path d="M4 40 C4 18, 18 4, 40 4" stroke="#c9a96e" stroke-width="0.5" fill="none"/><path d="M12 52 C12 30, 30 12, 52 12" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.5"/><circle cx="8" cy="8" r="2" fill="#c9a96e" opacity="0.35"/><circle cx="4" cy="18" r="1" fill="#c9a96e" opacity="0.2"/><circle cx="18" cy="4" r="1" fill="#c9a96e" opacity="0.2"/></svg></div>
 
     <div class="content">
       <div class="preamble anim">Together with their families</div>
-
       <div class="together anim">request the pleasure of your company<br>at the marriage of</div>
-
       <div class="names anim">
         <span class="name name--first">Tristen</span>
         <span class="ampersand">&amp;</span>
-        <span class="name name--second">Chloe</span>
+        <span class="name name--second">Chloe'</span>
       </div>
-
-      <div class="divider divider--top">
-        <div class="divider-line"></div>
-        <div class="divider-diamond"></div>
-        <div class="divider-line"></div>
-      </div>
-
+      <div class="divider divider--top"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
       <div class="detail-block date-block anim">
         <div class="detail-label">The Date</div>
         <div class="detail-main"><span class="placeholder">Saturday, the _____ of _____</span></div>
         <div class="detail-sub"><span class="placeholder">Two Thousand Twenty-Six</span></div>
       </div>
-
       <div class="detail-block time-block anim">
         <div class="detail-label">The Time</div>
         <div class="detail-value"><span class="placeholder">Five O'Clock in the Evening</span></div>
       </div>
-
       <div class="detail-block venue-block anim">
         <div class="detail-label">The Venue</div>
         <div class="venue-name"><span class="placeholder">Venue Name</span></div>
-        <div class="venue-address"><span class="placeholder">Venue Address • Amarillo, Texas</span></div>
+        <div class="venue-address"><span class="placeholder">Venue Address &bull; Amarillo, Texas</span></div>
       </div>
-
-      <div class="divider divider--bottom">
-        <div class="divider-line"></div>
-        <div class="divider-diamond"></div>
-        <div class="divider-line"></div>
-      </div>
-
+      <div class="divider divider--bottom"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
       <div class="rsvp anim">
         <div class="rsvp-label">Kindly Respond By</div>
         <div class="rsvp-value"><span class="placeholder">Date TBD</span></div>
       </div>
-
-      <div class="footer-note anim">Dinner & Celebration to Follow</div>
+      <div class="footer-note anim">Dinner &amp; Celebration to Follow</div>
     </div>
   </div>
 
-  <!-- Countdown Timer -->
-  <div class="countdown-section">
+  <!-- ─── Countdown ─── -->
+  <div class="section-card" id="countdown">
     <div class="countdown-title">Counting Down to Forever</div>
-    <div class="countdown" id="countdown">
+    <div class="countdown">
       <div class="countdown-unit">
         <div class="countdown-number" id="cd-days">---</div>
         <div class="countdown-label">Days</div>
@@ -907,36 +1179,32 @@
     </div>
   </div>
 
-  <!-- RSVP Form -->
-  <div class="rsvp-section">
+  <!-- ─── RSVP Form ─── -->
+  <div class="section-card" id="rsvp-section">
     <div class="section-title">RSVP</div>
     <div class="section-subtitle">We would be honored by your presence</div>
-
     <form id="rsvp-form">
       <div class="form-group">
         <label class="form-label">Your Name</label>
         <input type="text" class="form-input" name="name" required placeholder="Full Name">
       </div>
-
       <div class="form-group">
         <label class="form-label">Email</label>
         <input type="email" class="form-input" name="email" placeholder="your@email.com">
       </div>
-
       <div class="form-group">
         <label class="form-label">Will You Attend?</label>
         <div class="radio-group">
           <label class="radio-option">
-            <input type="radio" name="attending" value="yes" required>
+            <input type="radio" name="attending" value="Joyfully Accept" required>
             <span>Joyfully Accept</span>
           </label>
           <label class="radio-option">
-            <input type="radio" name="attending" value="no">
+            <input type="radio" name="attending" value="Regretfully Decline">
             <span>Regretfully Decline</span>
           </label>
         </div>
       </div>
-
       <div class="form-group">
         <label class="form-label">Number of Guests</label>
         <select class="form-select" name="guests">
@@ -944,88 +1212,126 @@
           <option value="2">2</option>
           <option value="3">3</option>
           <option value="4">4</option>
+          <option value="5+">5+</option>
         </select>
       </div>
-
       <div class="form-group">
         <label class="form-label">Dietary Restrictions</label>
         <input type="text" class="form-input" name="dietary" placeholder="Any allergies or preferences">
       </div>
-
       <div class="form-group">
         <label class="form-label">Message for the Couple</label>
         <textarea class="form-textarea" name="message" placeholder="Share your well wishes..."></textarea>
       </div>
-
       <button type="submit" class="submit-btn">Send RSVP</button>
       <div class="form-message" id="rsvp-message"></div>
     </form>
   </div>
 
-  <!-- Guest Book -->
-  <div class="guestbook-section">
+  <!-- ─── Guest Book ─── -->
+  <div class="section-card" id="guestbook">
     <div class="section-title">Guest Book</div>
-    <div class="section-subtitle">Leave your love & well wishes</div>
-
+    <div class="section-subtitle">Leave your love &amp; well wishes</div>
     <div class="guestbook-entries" id="guestbook-entries">
       <div class="gb-empty" id="gb-empty">Be the first to sign the guest book</div>
     </div>
-
-    <div class="gb-divider">
-      <div class="divider-line"></div>
-      <div class="divider-diamond"></div>
-      <div class="divider-line"></div>
-    </div>
-
+    <div class="mini-divider"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
     <form id="guestbook-form" style="margin-top: 24px;">
       <div class="form-group">
         <label class="form-label">Your Name</label>
         <input type="text" class="form-input" name="gb-name" required placeholder="Your Name">
       </div>
-
       <div class="form-group">
         <label class="form-label">Your Message</label>
         <textarea class="form-textarea" name="gb-message" required placeholder="Write something beautiful..."></textarea>
       </div>
-
       <button type="submit" class="submit-btn">Sign Guest Book</button>
       <div class="form-message" id="gb-message"></div>
     </form>
   </div>
+
+  <!-- ─── Song Requests ─── -->
+  <div class="section-card" id="music">
+    <div class="section-title">Request a Song</div>
+    <div class="section-subtitle">Help us build the perfect playlist</div>
+
+    <div class="form-group">
+      <label class="form-label">Your Name</label>
+      <input type="text" class="form-input" id="song-requester" placeholder="Your Name">
+    </div>
+
+    <div class="spotify-search-wrap">
+      <input type="text" class="form-input" id="spotify-search" placeholder="Search for a song...">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    </div>
+
+    <div class="search-results" id="search-results"></div>
+
+    <div class="song-queue" id="song-queue" style="display:none;">
+      <div class="queue-title">Requested Songs</div>
+      <div id="queue-list"></div>
+    </div>
+
+    <div class="form-message" id="song-message"></div>
+  </div>
+
+  <!-- ─── Photo Gallery ─── -->
+  <div class="section-card" id="photos" style="margin-bottom: 40px;">
+    <div class="section-title">Photo Gallery</div>
+    <div class="section-subtitle">Share your favorite moments</div>
+
+    <div class="upload-zone" id="upload-zone">
+      <svg class="upload-zone-icon" viewBox="0 0 40 40" fill="none" stroke="#c9a96e" stroke-width="1.5"><rect x="4" y="8" width="32" height="24" rx="2"/><path d="M4 26l10-8 6 5 6-4 10 7"/><circle cx="28" cy="16" r="3"/></svg>
+      <div class="upload-zone-text">Tap to Upload Photos</div>
+      <div class="upload-zone-hint">Select multiple photos at once</div>
+      <input type="file" id="file-input" accept="image/*" multiple style="display:none;">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Your Name</label>
+      <input type="text" class="form-input" id="photo-uploader" placeholder="Your Name">
+    </div>
+
+    <div class="upload-progress" id="upload-progress">
+      <div class="progress-text" id="progress-text">Uploading...</div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    </div>
+
+    <div class="photo-grid" id="photo-grid"></div>
+    <div class="photo-empty" id="photo-empty">No photos yet — be the first to share!</div>
+
+    <div class="form-message" id="photo-message"></div>
+  </div>
+
 </div>
 
-<!-- Particles container -->
-<div class="particles" id="particles"></div>
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close">CLOSE</button>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
 
-<!-- Firebase SDK for Guest Book -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<!-- Particles -->
+<div class="particles" id="particles"></div>
 
 <script>
 /* ═══════════════════════════════════════════
    CONFIGURATION - UPDATE THESE VALUES
    ═══════════════════════════════════════════ */
 
-// Wedding date: October 21, 2026 at 5:00 PM CDT
-const WEDDING_DATE = new Date('2026-10-21T17:00:00-05:00');
+// Wedding date: October 24, 2026 at 5:00 PM CDT (a Saturday)
+const WEDDING_DATE = new Date('2026-10-24T17:00:00-05:00');
 
-// Formspree: Sign up at https://formspree.io, create a form,
-// and replace YOUR_FORM_ID with your actual form ID
-const FORMSPREE_ID = 'YOUR_FORM_ID';
+// Google Apps Script Web App URL (from your deployment)
+const API_URL = 'https://script.google.com/macros/s/AKfycbz1FFsHP3qveNEK15gOCm1kMiaT8ozqSjDyOGjEmJ1zhaemweuU-eCXaHDLyuCcawGJ/exec';
 
-// Firebase: Go to https://console.firebase.google.com
-// 1. Create a project
-// 2. Create a Realtime Database (start in test mode)
-// 3. Copy your config here
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+// Spotify Client ID (from developer.spotify.com/dashboard)
+const SPOTIFY_CLIENT_ID = 'YOUR_SPOTIFY_CLIENT_ID';
+
+// Cloudinary (from cloudinary.com dashboard)
+const CLOUDINARY_CLOUD = 'dj4doqq1u';
+const CLOUDINARY_PRESET = 'wedding';
 
 /* ═══════════════════════════════════════════ */
 
@@ -1033,204 +1339,472 @@ const firebaseConfig = {
 function openInvitation() {
   const envelope = document.getElementById('envelope');
   const invitation = document.getElementById('invitation');
-
   envelope.classList.add('opened');
-
   setTimeout(() => {
     envelope.style.display = 'none';
     invitation.style.display = 'flex';
     createParticles();
     startCountdown();
-    initGuestBook();
+    loadGuestBook();
+    loadSongRequests();
+    loadPhotos();
+    observeSections();
+    setTimeout(() => document.getElementById('navDots').classList.add('visible'), 1000);
   }, 700);
 }
 
-// ─── Countdown Timer ───
+// ─── Scroll observer for section animations + nav dots ───
+function observeSections() {
+  const sections = document.querySelectorAll('.section-card');
+  const dots = document.querySelectorAll('.nav-dot');
+  const allSections = [document.getElementById('invite'), ...sections];
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        const idx = allSections.indexOf(entry.target);
+        if (idx >= 0) {
+          dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        }
+      }
+    });
+  }, { threshold: 0.2 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Also observe the invite card for nav dots
+  const inviteObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      dots.forEach((d, i) => d.classList.toggle('active', i === 0));
+    }
+  }, { threshold: 0.2 });
+  inviteObs.observe(document.getElementById('invite'));
+}
+
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+// ─── Countdown ───
 function startCountdown() {
   function update() {
-    const now = new Date();
-    const diff = WEDDING_DATE - now;
-
+    const diff = WEDDING_DATE - new Date();
     if (diff <= 0) {
-      document.getElementById('cd-days').textContent = '0';
-      document.getElementById('cd-hours').textContent = '0';
-      document.getElementById('cd-mins').textContent = '0';
-      document.getElementById('cd-secs').textContent = '0';
+      ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => document.getElementById(id).textContent = '0');
       return;
     }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff / 3600000) % 24);
+    const m = Math.floor((diff / 60000) % 60);
+    const s = Math.floor((diff / 1000) % 60);
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const mins = Math.floor((diff / (1000 * 60)) % 60);
-    const secs = Math.floor((diff / 1000) % 60);
-
-    const daysEl = document.getElementById('cd-days');
-    const hoursEl = document.getElementById('cd-hours');
-    const minsEl = document.getElementById('cd-mins');
-    const secsEl = document.getElementById('cd-secs');
-
-    if (daysEl.textContent !== String(days)) { daysEl.textContent = days; tickAnim(daysEl); }
-    if (hoursEl.textContent !== String(hours)) { hoursEl.textContent = hours; tickAnim(hoursEl); }
-    if (minsEl.textContent !== String(mins)) { minsEl.textContent = mins; tickAnim(minsEl); }
-    secsEl.textContent = secs;
-    tickAnim(secsEl);
-  }
-
-  function tickAnim(el) {
+    tick('cd-days', d); tick('cd-hours', h); tick('cd-mins', m);
+    document.getElementById('cd-secs').textContent = s;
+    const el = document.getElementById('cd-secs');
     el.classList.add('tick');
     setTimeout(() => el.classList.remove('tick'), 300);
   }
-
+  function tick(id, val) {
+    const el = document.getElementById(id);
+    if (el.textContent !== String(val)) {
+      el.textContent = val;
+      el.classList.add('tick');
+      setTimeout(() => el.classList.remove('tick'), 300);
+    }
+  }
   update();
   setInterval(update, 1000);
 }
 
-// ─── RSVP Form (Formspree) ───
+// ─── API helper ───
+function apiCall(params) {
+  const url = new URL(API_URL);
+  Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
+  return fetch(url).then(r => r.json());
+}
+
+// ─── RSVP ───
 document.getElementById('rsvp-form').addEventListener('submit', async function(e) {
   e.preventDefault();
-
   const form = e.target;
   const btn = form.querySelector('.submit-btn');
   const msg = document.getElementById('rsvp-message');
-
-  btn.textContent = 'Sending...';
-  btn.disabled = true;
-
-  const data = new FormData(form);
+  btn.textContent = 'Sending...'; btn.disabled = true;
+  msg.className = 'form-message';
 
   try {
-    const res = await fetch('https://formspree.io/f/' + FORMSPREE_ID, {
-      method: 'POST',
-      body: data,
-      headers: { 'Accept': 'application/json' }
-    });
+    const data = new FormData(form);
+    const params = { action: 'submitRSVP' };
+    data.forEach((v, k) => params[k] = v);
+    const res = await apiCall(params);
 
-    if (res.ok) {
+    if (res.success) {
       msg.textContent = 'Thank you! Your RSVP has been received.';
       msg.classList.add('show');
       form.reset();
       btn.textContent = 'Sent!';
       setTimeout(() => { btn.textContent = 'Send RSVP'; btn.disabled = false; }, 3000);
-    } else {
-      throw new Error('Failed');
-    }
+    } else { throw new Error(res.error); }
   } catch (err) {
     msg.textContent = 'Something went wrong. Please try again.';
-    msg.style.color = '#c27070';
-    msg.classList.add('show');
-    btn.textContent = 'Send RSVP';
-    btn.disabled = false;
+    msg.className = 'form-message show error';
+    btn.textContent = 'Send RSVP'; btn.disabled = false;
   }
 });
 
-// ─── Guest Book (Firebase) ───
-let db = null;
-
-function initGuestBook() {
-  if (firebaseConfig.apiKey === 'YOUR_API_KEY') {
-    console.log('Guest book: Firebase not configured yet. See config section in index.html');
-    return;
-  }
-
+// ─── Guest Book ───
+async function loadGuestBook() {
+  if (API_URL === 'YOUR_GOOGLE_SCRIPT_URL') return;
   try {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.database();
-    loadGuestBookEntries();
-  } catch (err) {
-    console.error('Firebase init error:', err);
-  }
-}
-
-function loadGuestBookEntries() {
-  if (!db) return;
-
-  const ref = db.ref('guestbook');
-  ref.orderByChild('timestamp').on('value', (snapshot) => {
-    const container = document.getElementById('guestbook-entries');
-    const emptyMsg = document.getElementById('gb-empty');
-
-    // Clear existing entries (keep empty message)
-    container.querySelectorAll('.gb-entry').forEach(el => el.remove());
-
-    if (!snapshot.exists()) {
-      emptyMsg.style.display = 'block';
-      return;
+    const res = await apiCall({ action: 'getGuestBook' });
+    if (res.success && res.entries.length > 0) {
+      document.getElementById('gb-empty').style.display = 'none';
+      const container = document.getElementById('guestbook-entries');
+      res.entries.forEach(entry => {
+        container.appendChild(createGBEntry(entry));
+      });
     }
-
-    emptyMsg.style.display = 'none';
-    const entries = [];
-    snapshot.forEach((child) => {
-      entries.push(child.val());
-    });
-
-    // Show newest first
-    entries.reverse().forEach((entry) => {
-      const div = document.createElement('div');
-      div.className = 'gb-entry';
-      const date = new Date(entry.timestamp);
-      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      div.innerHTML = `
-        <div class="gb-name">${escapeHtml(entry.name)}</div>
-        <div class="gb-message">"${escapeHtml(entry.message)}"</div>
-        <div class="gb-date">${dateStr}</div>
-      `;
-      container.appendChild(div);
-    });
-  });
+  } catch (err) { console.log('Guest book load error:', err); }
 }
 
-function escapeHtml(text) {
+function createGBEntry(entry) {
   const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+  div.className = 'gb-entry';
+  div.innerHTML = `
+    <div class="gb-name">${escapeHtml(entry.name)}</div>
+    <div class="gb-message">"${escapeHtml(entry.message)}"</div>
+    <div class="gb-date">${entry.timestamp}</div>`;
+  return div;
 }
 
-document.getElementById('guestbook-form').addEventListener('submit', function(e) {
-  e.preventDefault();
+function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 
+document.getElementById('guestbook-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
   const form = e.target;
   const btn = form.querySelector('.submit-btn');
   const msg = document.getElementById('gb-message');
   const name = form.querySelector('[name="gb-name"]').value.trim();
   const message = form.querySelector('[name="gb-message"]').value.trim();
-
   if (!name || !message) return;
 
-  if (!db) {
-    msg.textContent = 'Guest book is being set up. Check back soon!';
-    msg.classList.add('show');
+  btn.textContent = 'Signing...'; btn.disabled = true;
+  msg.className = 'form-message';
+
+  try {
+    const res = await apiCall({ action: 'submitGuestBook', name, message });
+    if (res.success) {
+      msg.textContent = 'Thank you for signing our guest book!';
+      msg.classList.add('show');
+      document.getElementById('gb-empty').style.display = 'none';
+      const container = document.getElementById('guestbook-entries');
+      const entry = createGBEntry({ name, message, timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) });
+      container.insertBefore(entry, container.firstChild);
+      form.reset();
+      btn.textContent = 'Signed!';
+      setTimeout(() => { btn.textContent = 'Sign Guest Book'; btn.disabled = false; msg.classList.remove('show'); }, 3000);
+    } else { throw new Error(res.error); }
+  } catch (err) {
+    msg.textContent = 'Something went wrong. Please try again.';
+    msg.className = 'form-message show error';
+    btn.textContent = 'Sign Guest Book'; btn.disabled = false;
+  }
+});
+
+// ─── Spotify Search ───
+let spotifyToken = null;
+
+async function getSpotifyToken() {
+  if (spotifyToken) return spotifyToken;
+  if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') return null;
+
+  const res = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `grant_type=client_credentials&client_id=${SPOTIFY_CLIENT_ID}&client_secret=PLACEHOLDER`
+  });
+
+  // Client credentials flow needs client_secret — we'll use the PKCE flow instead
+  // For simplicity, we use the search via a proxy or the embed approach
+  // Actually, let's use the Spotify Web API with client credentials
+  // The user needs to also provide their client secret
+
+  // For now, fall back to a search-only approach
+  return null;
+}
+
+let searchTimeout = null;
+document.getElementById('spotify-search').addEventListener('input', function(e) {
+  clearTimeout(searchTimeout);
+  const query = e.target.value.trim();
+  if (query.length < 2) {
+    document.getElementById('search-results').innerHTML = '';
+    return;
+  }
+  searchTimeout = setTimeout(() => searchSpotify(query), 400);
+});
+
+async function searchSpotify(query) {
+  const results = document.getElementById('search-results');
+
+  if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
+    // Demo mode — show a helpful message
+    results.innerHTML = '<div style="padding:16px;font-family:Montserrat,sans-serif;font-size:10px;color:var(--soft);letter-spacing:1px;">Configure your Spotify Client ID to enable search</div>';
     return;
   }
 
-  btn.textContent = 'Signing...';
-  btn.disabled = true;
+  try {
+    // Use Spotify's public search endpoint via the token
+    if (!spotifyToken) {
+      // Get token using client credentials
+      const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'client_credentials',
+          client_id: SPOTIFY_CLIENT_ID,
+          client_secret: SPOTIFY_CLIENT_SECRET
+        })
+      });
+      const tokenData = await tokenRes.json();
+      spotifyToken = tokenData.access_token;
+      // Refresh token before expiry
+      setTimeout(() => { spotifyToken = null; }, (tokenData.expires_in - 60) * 1000);
+    }
 
-  const ref = db.ref('guestbook');
-  ref.push({
-    name: name,
-    message: message,
-    timestamp: Date.now()
-  }).then(() => {
-    msg.textContent = 'Thank you for signing our guest book!';
-    msg.classList.add('show');
-    form.reset();
-    btn.textContent = 'Signed!';
-    setTimeout(() => { btn.textContent = 'Sign Guest Book'; btn.disabled = false; msg.classList.remove('show'); }, 3000);
-  }).catch((err) => {
+    const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=8`, {
+      headers: { 'Authorization': 'Bearer ' + spotifyToken }
+    });
+    const data = await res.json();
+
+    if (data.tracks && data.tracks.items.length > 0) {
+      results.innerHTML = data.tracks.items.map(track => `
+        <div class="song-result" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artists[0].name)}', '${track.id}', '${track.album.images[2]?.url || track.album.images[0]?.url || ''}')">
+          <img src="${track.album.images[2]?.url || track.album.images[0]?.url || ''}" alt="">
+          <div class="song-info">
+            <div class="song-title">${escapeHtml(track.name)}</div>
+            <div class="song-artist">${escapeHtml(track.artists.map(a => a.name).join(', '))}</div>
+          </div>
+          <button class="song-add-btn" type="button">+</button>
+        </div>
+      `).join('');
+    } else {
+      results.innerHTML = '<div style="padding:16px;font-family:Cormorant Garamond,serif;font-style:italic;color:var(--soft);">No songs found</div>';
+    }
+  } catch (err) {
+    console.error('Spotify search error:', err);
+    spotifyToken = null;
+  }
+}
+
+function escapeAttr(s) { return s.replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+async function addSong(song, artist, spotifyId, albumArt) {
+  const name = document.getElementById('song-requester').value.trim() || 'Anonymous';
+  const msg = document.getElementById('song-message');
+
+  try {
+    if (API_URL !== 'YOUR_GOOGLE_SCRIPT_URL') {
+      await apiCall({ action: 'submitSongRequest', name, song, artist, spotifyId, albumArt });
+    }
+
+    // Add to visual queue
+    const queue = document.getElementById('song-queue');
+    const list = document.getElementById('queue-list');
+    queue.style.display = 'block';
+
+    const item = document.createElement('div');
+    item.className = 'queue-item';
+    item.innerHTML = `
+      ${albumArt ? `<img src="${albumArt}" alt="">` : ''}
+      <div class="song-info">
+        <div class="song-title">${escapeHtml(song)}</div>
+        <div class="song-artist">${escapeHtml(artist)}</div>
+        <div class="queue-requester">Requested by ${escapeHtml(name)}</div>
+      </div>`;
+    list.insertBefore(item, list.firstChild);
+
+    document.getElementById('spotify-search').value = '';
+    document.getElementById('search-results').innerHTML = '';
+
+    msg.textContent = `"${song}" added to the playlist!`;
+    msg.className = 'form-message show';
+    setTimeout(() => msg.classList.remove('show'), 3000);
+  } catch (err) {
     msg.textContent = 'Something went wrong. Please try again.';
-    msg.style.color = '#c27070';
-    msg.classList.add('show');
-    btn.textContent = 'Sign Guest Book';
-    btn.disabled = false;
-  });
+    msg.className = 'form-message show error';
+  }
+}
+
+async function loadSongRequests() {
+  if (API_URL === 'YOUR_GOOGLE_SCRIPT_URL') return;
+  try {
+    const res = await apiCall({ action: 'getSongRequests' });
+    if (res.success && res.entries.length > 0) {
+      const queue = document.getElementById('song-queue');
+      const list = document.getElementById('queue-list');
+      queue.style.display = 'block';
+      res.entries.forEach(entry => {
+        const item = document.createElement('div');
+        item.className = 'queue-item';
+        item.innerHTML = `
+          ${entry.albumArt ? `<img src="${entry.albumArt}" alt="">` : ''}
+          <div class="song-info">
+            <div class="song-title">${escapeHtml(entry.song)}</div>
+            <div class="song-artist">${escapeHtml(entry.artist)}</div>
+            <div class="queue-requester">Requested by ${escapeHtml(entry.name)}</div>
+          </div>`;
+        list.appendChild(item);
+      });
+    }
+  } catch (err) { console.log('Song requests load error:', err); }
+}
+
+// ─── Photo Upload (Cloudinary) ───
+const uploadZone = document.getElementById('upload-zone');
+const fileInput = document.getElementById('file-input');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+
+uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
 });
+
+fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+async function handleFiles(files) {
+  if (!files.length) return;
+  if (CLOUDINARY_CLOUD === 'YOUR_CLOUD_NAME') {
+    const msg = document.getElementById('photo-message');
+    msg.textContent = 'Photo uploads will work once Cloudinary is configured.';
+    msg.className = 'form-message show';
+    return;
+  }
+
+  const name = document.getElementById('photo-uploader').value.trim() || 'Anonymous';
+  const progress = document.getElementById('upload-progress');
+  const bar = document.getElementById('progress-bar');
+  const text = document.getElementById('progress-text');
+
+  progress.classList.add('show');
+  let completed = 0;
+  const total = files.length;
+
+  for (const file of files) {
+    text.textContent = `Uploading ${completed + 1} of ${total}...`;
+    bar.style.width = ((completed / total) * 100) + '%';
+
+    try {
+      // Compress before upload
+      const compressed = await compressImage(file, 1200, 0.8);
+
+      const formData = new FormData();
+      formData.append('file', compressed);
+      formData.append('upload_preset', CLOUDINARY_PRESET);
+      formData.append('folder', 'tristen-and-chloe');
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+
+      if (data.secure_url) {
+        // Log to Google Sheets
+        if (API_URL !== 'YOUR_GOOGLE_SCRIPT_URL') {
+          apiCall({ action: 'submitPhoto', name, url: data.secure_url, caption: '' });
+        }
+        addPhotoToGrid(data.secure_url, name);
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+    }
+
+    completed++;
+    bar.style.width = ((completed / total) * 100) + '%';
+  }
+
+  text.textContent = `${total} photo${total > 1 ? 's' : ''} uploaded!`;
+  bar.style.width = '100%';
+  setTimeout(() => { progress.classList.remove('show'); bar.style.width = '0%'; }, 2000);
+  fileInput.value = '';
+}
+
+function compressImage(file, maxWidth, quality) {
+  return new Promise((resolve) => {
+    // Skip non-image files
+    if (!file.type.startsWith('image/')) { resolve(file); return; }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+
+        if (w > maxWidth) {
+          h = (h * maxWidth) / w;
+          w = maxWidth;
+        }
+
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        canvas.toBlob((blob) => resolve(blob), 'image/jpeg', quality);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function addPhotoToGrid(url, name) {
+  document.getElementById('photo-empty').style.display = 'none';
+  const grid = document.getElementById('photo-grid');
+  const thumb = url.replace('/upload/', '/upload/c_fill,w_300,h_300/');
+
+  const item = document.createElement('div');
+  item.className = 'photo-grid-item';
+  item.onclick = () => openLightbox(url, name);
+  item.innerHTML = `
+    <img src="${thumb}" alt="" loading="lazy">
+    <div class="photo-overlay"><span>${escapeHtml(name)}</span></div>`;
+  grid.insertBefore(item, grid.firstChild);
+}
+
+async function loadPhotos() {
+  if (API_URL === 'YOUR_GOOGLE_SCRIPT_URL') return;
+  try {
+    const res = await apiCall({ action: 'getPhotos' });
+    if (res.success && res.entries.length > 0) {
+      document.getElementById('photo-empty').style.display = 'none';
+      res.entries.forEach(entry => addPhotoToGrid(entry.url, entry.name));
+    }
+  } catch (err) { console.log('Photos load error:', err); }
+}
+
+// ─── Lightbox ───
+function openLightbox(url, caption) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox-caption').textContent = caption ? `Photo by ${caption}` : '';
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
 
 // ─── Particles ───
 function createParticles() {
   const container = document.getElementById('particles');
-  const count = 30;
-
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < 30; i++) {
     const p = document.createElement('div');
     p.classList.add('particle');
     const size = Math.random() * 4 + 2;
@@ -1239,35 +1813,28 @@ function createParticles() {
     p.style.left = Math.random() * 100 + '%';
     p.style.top = '-10px';
     p.style.animationDelay = (Math.random() * 3) + 's';
-    p.style.animation = `particleFall ${6 + Math.random() * 6}s ease-in forwards`;
-    p.style.animation += `, shimmer ${2 + Math.random() * 2}s ease-in-out infinite`;
-
-    if (Math.random() > 0.6) {
-      p.style.borderRadius = '0';
-      p.style.transform = 'rotate(45deg)';
-    }
-
+    p.style.animation = `particleFall ${6 + Math.random() * 6}s ease-in forwards, shimmer ${2 + Math.random() * 2}s ease-in-out infinite`;
+    if (Math.random() > 0.6) { p.style.borderRadius = '0'; p.style.transform = 'rotate(45deg)'; }
     container.appendChild(p);
   }
-
   setTimeout(() => {
     for (let i = 0; i < 15; i++) {
       const p = document.createElement('div');
       p.classList.add('particle');
       const size = Math.random() * 3 + 1.5;
-      p.style.width = size + 'px';
-      p.style.height = size + 'px';
-      p.style.left = Math.random() * 100 + '%';
-      p.style.top = '-10px';
+      p.style.width = size + 'px'; p.style.height = size + 'px';
+      p.style.left = Math.random() * 100 + '%'; p.style.top = '-10px';
       p.style.animation = `particleFall ${8 + Math.random() * 8}s ease-in forwards`;
-      if (Math.random() > 0.5) {
-        p.style.borderRadius = '0';
-        p.style.transform = 'rotate(45deg)';
-      }
+      if (Math.random() > 0.5) { p.style.borderRadius = '0'; p.style.transform = 'rotate(45deg)'; }
       container.appendChild(p);
     }
   }, 3000);
 }
+
+// ─── Spotify Client Secret ───
+// NOTE: For the Spotify search to work, you also need the Client Secret.
+// Add it here after getting it from developer.spotify.com
+const SPOTIFY_CLIENT_SECRET = 'YOUR_SPOTIFY_CLIENT_SECRET';
 </script>
 </body>
 </html>
