@@ -1327,7 +1327,7 @@ const WEDDING_DATE = new Date('2026-10-24T17:00:00-05:00');
 const API_URL = 'https://script.google.com/macros/s/AKfycbz1FFsHP3qveNEK15gOCm1kMiaT8ozqSjDyOGjEmJ1zhaemweuU-eCXaHDLyuCcawGJ/exec';
 
 // Spotify Client ID (from developer.spotify.com/dashboard)
-const SPOTIFY_CLIENT_ID = 'caea53e0b8a148188981439894818a89';
+// Spotify search is handled by serverless function at /api/spotify
 
 // Cloudinary (from cloudinary.com dashboard)
 const CLOUDINARY_CLOUD = 'dj4doqq1u';
@@ -1513,27 +1513,6 @@ document.getElementById('guestbook-form').addEventListener('submit', async funct
 });
 
 // ─── Spotify Search ───
-let spotifyToken = null;
-
-async function getSpotifyToken() {
-  if (spotifyToken) return spotifyToken;
-  if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') return null;
-
-  const res = await fetch('https://accounts.spotify.com/api/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `grant_type=client_credentials&client_id=${SPOTIFY_CLIENT_ID}&client_secret=PLACEHOLDER`
-  });
-
-  // Client credentials flow needs client_secret — we'll use the PKCE flow instead
-  // For simplicity, we use the search via a proxy or the embed approach
-  // Actually, let's use the Spotify Web API with client credentials
-  // The user needs to also provide their client secret
-
-  // For now, fall back to a search-only approach
-  return null;
-}
-
 let searchTimeout = null;
 document.getElementById('spotify-search').addEventListener('input', function(e) {
   clearTimeout(searchTimeout);
@@ -1548,34 +1527,8 @@ document.getElementById('spotify-search').addEventListener('input', function(e) 
 async function searchSpotify(query) {
   const results = document.getElementById('search-results');
 
-  if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
-    // Demo mode — show a helpful message
-    results.innerHTML = '<div style="padding:16px;font-family:Montserrat,sans-serif;font-size:10px;color:var(--soft);letter-spacing:1px;">Configure your Spotify Client ID to enable search</div>';
-    return;
-  }
-
   try {
-    // Use Spotify's public search endpoint via the token
-    if (!spotifyToken) {
-      // Get token using client credentials
-      const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          grant_type: 'client_credentials',
-          client_id: SPOTIFY_CLIENT_ID,
-          client_secret: SPOTIFY_CLIENT_SECRET
-        })
-      });
-      const tokenData = await tokenRes.json();
-      spotifyToken = tokenData.access_token;
-      // Refresh token before expiry
-      setTimeout(() => { spotifyToken = null; }, (tokenData.expires_in - 60) * 1000);
-    }
-
-    const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=8`, {
-      headers: { 'Authorization': 'Bearer ' + spotifyToken }
-    });
+    const res = await fetch('/api/spotify?q=' + encodeURIComponent(query));
     const data = await res.json();
 
     if (data.tracks && data.tracks.items.length > 0) {
@@ -1594,7 +1547,6 @@ async function searchSpotify(query) {
     }
   } catch (err) {
     console.error('Spotify search error:', err);
-    spotifyToken = null;
   }
 }
 
@@ -1834,7 +1786,7 @@ function createParticles() {
 // ─── Spotify Client Secret ───
 // NOTE: For the Spotify search to work, you also need the Client Secret.
 // Add it here after getting it from developer.spotify.com
-const SPOTIFY_CLIENT_SECRET = '7b3f09ac244745768e36ad2239e0b2a8';
+// Spotify credentials stored securely in Vercel environment variables
 </script>
 </body>
 </html>
