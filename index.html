@@ -1265,11 +1265,6 @@
     <div class="section-title">Request a Song</div>
     <div class="section-subtitle">Help us build the perfect playlist</div>
 
-    <div class="form-group">
-      <label class="form-label">Your Name</label>
-      <input type="text" class="form-input" id="song-requester" placeholder="Your Name">
-    </div>
-
     <div class="spotify-search-wrap">
       <input type="text" class="form-input" id="spotify-search" placeholder="Search for a song...">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -1586,7 +1581,7 @@ async function searchSpotify(query) {
 function escapeAttr(s) { return s.replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 
 async function addSong(song, artist, spotifyId, albumArt) {
-  const name = document.getElementById('song-requester').value.trim() || 'Anonymous';
+  const name = 'Guest';
   const msg = document.getElementById('song-message');
 
   try {
