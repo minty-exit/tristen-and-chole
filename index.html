@@ -1661,7 +1661,10 @@ uploadZone.addEventListener('drop', (e) => {
 
 fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
+let uploading = false;
 async function handleFiles(files) {
+  if (uploading) return;
+  uploading = true;
   if (!files.length) return;
   if (CLOUDINARY_CLOUD === 'YOUR_CLOUD_NAME') {
     const msg = document.getElementById('photo-message');
@@ -1717,6 +1720,7 @@ async function handleFiles(files) {
   bar.style.width = '100%';
   setTimeout(() => { progress.classList.remove('show'); bar.style.width = '0%'; }, 2000);
   fileInput.value = '';
+  uploading = false;
 }
 
 function compressImage(file, maxWidth, quality) {
