@@ -148,12 +148,21 @@ export default async function handler(req, res) {
         params.set('seed_genres', mood.genres.join(','));
       }
 
-      const recRes = await fetch(`https://api.spotify.com/v1/recommendations?${params}`, {
+      const recUrl = `https://api.spotify.com/v1/recommendations?${params}`;
+      const recRes = await fetch(recUrl, {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const recData = await recRes.json();
 
-      const tracks = (recData.tracks || []).map(t => ({
+      // If recommendations failed, return debug info
+      if (!recData.tracks || recData.tracks.length === 0) {
+        return res.status(200).json({
+          success: false,
+          debug: { status: recRes.status, response: recData, url: recUrl, seedTracks, mood: recMood }
+        });
+      }
+
+      const tracks = recData.tracks.map(t => ({
         id: t.id,
         name: t.name,
         artist: t.artists.map(a => a.name).join(', '),
