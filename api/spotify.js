@@ -48,6 +48,27 @@ export default async function handler(req, res) {
     }
     try {
       const token = await getToken(true);
+
+      // Check if track already exists in playlist
+      const plRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items?limit=50&fields=items(track(id)),next`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const plData = await plRes.json();
+      const existingIds = (plData.items || []).map(i => i.track?.id).filter(Boolean);
+
+      // Check additional pages if playlist has 50+ songs
+      let nextUrl = plData.next;
+      while (nextUrl) {
+        const nextRes = await fetch(nextUrl, { headers: { 'Authorization': 'Bearer ' + token } });
+        const nextData = await nextRes.json();
+        existingIds.push(...(nextData.items || []).map(i => i.track?.id).filter(Boolean));
+        nextUrl = nextData.next;
+      }
+
+      if (existingIds.includes(addTrack)) {
+        return res.status(200).json({ success: false, duplicate: true, error: 'This song is already in the playlist!' });
+      }
+
       const addRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items`, {
         method: 'POST',
         headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },

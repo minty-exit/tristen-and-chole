@@ -2091,8 +2091,14 @@ async function addSong(song, artist, spotifyId, albumArt) {
   const msg = document.getElementById('song-message');
 
   try {
-    // Add to Spotify playlist
-    fetch('/api/spotify?add=' + spotifyId).catch(() => {});
+    // Add to Spotify playlist (check for duplicates)
+    const spotifyRes = await fetch('/api/spotify?add=' + spotifyId).then(r => r.json()).catch(() => ({}));
+    if (spotifyRes.duplicate) {
+      msg.textContent = 'This song is already in the playlist!';
+      msg.className = 'form-message show';
+      setTimeout(() => msg.classList.remove('show'), 3000);
+      return;
+    }
 
     // Log to Google Sheet
     if (API_URL !== 'YOUR_GOOGLE_SCRIPT_URL') {
