@@ -81,97 +81,143 @@ export default async function handler(req, res) {
     }
   }
 
-  // ─── Recommendations by mood (using /recommendations + playlist seed tracks) ───
+  // ─── Recommendations by mood (same artists + similar artists from playlist) ───
   if (recMood) {
     try {
       const token = await getToken(false);
       const playlistId = process.env.SPOTIFY_PLAYLIST_ID;
-      let seedTracks = [];
+      let playlistArtistIds = [];
+      let playlistArtistNames = [];
+      let playlistTrackIds = new Set();
 
-      // Pull last few tracks from the playlist to use as seeds
+      // Pull artists and track IDs from the playlist
       if (playlistId) {
         try {
           const userToken = await getToken(true);
-          const plRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items?limit=10&fields=items(track(id,artists(id)))`, {
+          const plRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items?limit=50`, {
             headers: { 'Authorization': 'Bearer ' + userToken }
           });
           const plData = await plRes.json();
           if (plData.items) {
-            seedTracks = plData.items.map(i => i.track?.id).filter(Boolean);
-            // Shuffle and pick up to 3
-            for (let i = seedTracks.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [seedTracks[i], seedTracks[j]] = [seedTracks[j], seedTracks[i]];
+            const seenArtists = new Set();
+            for (const item of plData.items) {
+              if (item.track?.id) playlistTrackIds.add(item.track.id);
+              if (item.track?.artists) {
+                for (const a of item.track.artists) {
+                  if (a.id && !seenArtists.has(a.id)) {
+                    seenArtists.add(a.id);
+                    playlistArtistIds.push(a.id);
+                    playlistArtistNames.push(a.name);
+                  }
+                }
+              }
             }
-            seedTracks = seedTracks.slice(0, 3);
           }
         } catch (e) {}
       }
 
-      // Mood configs with genre seeds and tuning
-      const moods = {
-        'slow-dance': {
-          genres: ['romance', 'r-n-b'],
-          params: { target_energy: 0.3, target_valence: 0.5, target_danceability: 0.4, min_popularity: 50 }
-        },
-        'good-times': {
-          genres: ['pop', 'happy'],
-          params: { target_energy: 0.7, target_valence: 0.8, target_danceability: 0.7, min_popularity: 60 }
-        },
-        'two-steppin': {
-          genres: ['country'],
-          params: { target_energy: 0.6, target_valence: 0.7, target_danceability: 0.65, min_popularity: 50 }
-        },
-        'dance-floor': {
-          genres: ['dance', 'party'],
-          params: { target_energy: 0.85, target_valence: 0.8, target_danceability: 0.85, min_popularity: 60 }
+      // Shuffle artists
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
         }
-      };
-
-      const mood = moods[recMood] || moods['good-times'];
-
-      const params = new URLSearchParams({
-        limit: 10,
-        ...mood.params
-      });
-
-      // Use seed tracks from playlist + fill with genre seeds (max 5 total)
-      if (seedTracks.length > 0) {
-        params.set('seed_tracks', seedTracks.join(','));
-        // Fill remaining seeds with genres (5 total max)
-        const genreSlots = Math.min(5 - seedTracks.length, mood.genres.length);
-        if (genreSlots > 0) {
-          params.set('seed_genres', mood.genres.slice(0, genreSlots).join(','));
-        }
-      } else {
-        // No playlist tracks yet, just use genres
-        params.set('seed_genres', mood.genres.join(','));
+        return arr;
       }
+      shuffle(playlistArtistIds);
+      shuffle(playlistArtistNames);
 
-      const recUrl = `https://api.spotify.com/v1/recommendations?${params}`;
-      const recRes = await fetch(recUrl, {
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-      const recData = await recRes.json();
+      // Mood-specific search terms
+      const moods = {
+        'slow-dance': ['love song', 'romantic ballad', 'slow dance', 'wedding song'],
+        'good-times': ['feel good hit', 'upbeat pop', 'happy song', 'party anthem'],
+        'two-steppin': ['country hit', 'country dance', 'country love', 'country anthem'],
+        'dance-floor': ['dance hit', 'club banger', 'party dance', 'hype song']
+      };
+      const moodTerms = moods[recMood] || moods['good-times'];
 
-      // If recommendations failed, return debug info
-      if (!recData.tracks || recData.tracks.length === 0) {
-        return res.status(200).json({
-          success: false,
-          debug: { status: recRes.status, response: recData, url: recUrl, seedTracks, mood: recMood }
+      const allTracks = [];
+      const seenIds = new Set(playlistTrackIds);
+      const seenArtistNames = new Set();
+
+      function addTrack(t) {
+        if (seenIds.has(t.id)) return;
+        seenIds.add(t.id);
+        allTracks.push({
+          id: t.id, name: t.name,
+          artist: t.artists.map(a => a.name).join(', '),
+          albumArt: t.album.images[1]?.url || t.album.images[0]?.url || '',
+          albumArtSmall: t.album.images[2]?.url || t.album.images[0]?.url || ''
         });
       }
 
-      const tracks = recData.tracks.map(t => ({
-        id: t.id,
-        name: t.name,
-        artist: t.artists.map(a => a.name).join(', '),
-        albumArt: t.album.images[1]?.url || t.album.images[0]?.url || '',
-        albumArtSmall: t.album.images[2]?.url || t.album.images[0]?.url || '',
-        preview: t.preview_url || ''
-      }));
+      // Strategy 1: Get related artists, then search for their tracks + mood
+      const relatedArtistNames = [];
+      for (const artistId of playlistArtistIds.slice(0, 3)) {
+        try {
+          const relRes = await fetch(`https://api.spotify.com/v1/artists/${artistId}/related-artists`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          const relData = await relRes.json();
+          if (relData.artists) {
+            for (const a of relData.artists.slice(0, 3)) {
+              if (!playlistArtistNames.includes(a.name)) {
+                relatedArtistNames.push(a.name);
+              }
+            }
+          }
+        } catch (e) {}
+      }
 
-      return res.status(200).json({ success: true, tracks, seeded: seedTracks.length > 0 });
+      // Search for tracks by related artists
+      shuffle(relatedArtistNames);
+      for (const artist of relatedArtistNames.slice(0, 4)) {
+        if (allTracks.length >= 4) break;
+        const term = moodTerms[Math.floor(Math.random() * moodTerms.length)];
+        try {
+          const res = await fetch(
+            `https://api.spotify.com/v1/search?q=${encodeURIComponent(`artist:${artist}`)}&type=track&limit=2`,
+            { headers: { 'Authorization': 'Bearer ' + token } }
+          );
+          const data = await res.json();
+          for (const t of (data.tracks?.items || [])) { addTrack(t); }
+        } catch (e) {}
+      }
+
+      // Strategy 2: Search for more songs by playlist artists + mood
+      for (const artist of playlistArtistNames.slice(0, 3)) {
+        if (allTracks.length >= 6) break;
+        const term = moodTerms[Math.floor(Math.random() * moodTerms.length)];
+        try {
+          const res = await fetch(
+            `https://api.spotify.com/v1/search?q=${encodeURIComponent(`artist:${artist} ${term}`)}&type=track&limit=2`,
+            { headers: { 'Authorization': 'Bearer ' + token } }
+          );
+          const data = await res.json();
+          for (const t of (data.tracks?.items || [])) { addTrack(t); }
+        } catch (e) {}
+      }
+
+      // Strategy 3: Fill remaining with mood genre searches
+      shuffle(moodTerms);
+      for (const term of moodTerms) {
+        if (allTracks.length >= 8) break;
+        try {
+          const offset = Math.floor(Math.random() * 5);
+          const res = await fetch(
+            `https://api.spotify.com/v1/search?q=${encodeURIComponent(term)}&type=track&limit=5&offset=${offset}`,
+            { headers: { 'Authorization': 'Bearer ' + token } }
+          );
+          const data = await res.json();
+          for (const t of (data.tracks?.items || [])) {
+            if (allTracks.length >= 10) break;
+            addTrack(t);
+          }
+        } catch (e) {}
+      }
+
+      shuffle(allTracks);
+      return res.status(200).json({ success: true, tracks: allTracks.slice(0, 8), relatedArtists: relatedArtistNames.slice(0, 5) });
     } catch (err) {
       return res.status(500).json({ success: false, error: err.message });
     }
