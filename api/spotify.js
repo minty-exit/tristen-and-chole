@@ -6,9 +6,13 @@ export default async function handler(req, res) {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
-  // ─── Get access token helper ───
+  // ─── Cached tokens (persist across warm invocations) ───
+  if (!global._spotifyCache) global._spotifyCache = { client: null, clientExp: 0, user: null, userExp: 0 };
+
   async function getToken(useRefresh) {
+    const now = Date.now();
     if (useRefresh) {
+      if (global._spotifyCache.user && now < global._spotifyCache.userExp) return global._spotifyCache.user;
       const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
       const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
@@ -18,14 +22,21 @@ export default async function handler(req, res) {
         },
         body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: refreshToken })
       });
-      return (await tokenRes.json()).access_token;
+      const data = await tokenRes.json();
+      global._spotifyCache.user = data.access_token;
+      global._spotifyCache.userExp = now + ((data.expires_in || 3600) - 120) * 1000;
+      return data.access_token;
     }
+    if (global._spotifyCache.client && now < global._spotifyCache.clientExp) return global._spotifyCache.client;
     const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ grant_type: 'client_credentials', client_id: clientId, client_secret: clientSecret })
     });
-    return (await tokenRes.json()).access_token;
+    const data = await tokenRes.json();
+    global._spotifyCache.client = data.access_token;
+    global._spotifyCache.clientExp = now + ((data.expires_in || 3600) - 120) * 1000;
+    return data.access_token;
   }
 
   // ─── Add track to playlist ───
