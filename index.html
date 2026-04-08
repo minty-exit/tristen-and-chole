@@ -1277,9 +1277,51 @@
     fill: currentColor;
   }
 
+  /* ───── Mood Toggle ───── */
+  .mood-toggle {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .mood-btn {
+    padding: 10px 16px;
+    border: 1px solid var(--gold-light);
+    background: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--soft);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+  }
+
+  .mood-btn:hover, .mood-btn.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201,169,110,0.06);
+  }
+
+  .mood-btn.active {
+    background: var(--gold);
+    color: var(--cream);
+  }
+
+  .mood-emoji {
+    font-size: 13px;
+    margin-right: 4px;
+  }
+
   /* ───── Recommended songs ───── */
   .recommended-section {
     margin-bottom: 24px;
+    min-height: 100px;
   }
 
   .recommended-title {
@@ -1292,32 +1334,92 @@
     margin-bottom: 12px;
   }
 
-  .rec-song {
-    display: flex;
-    align-items: center;
+  .rec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    padding: 8px 4px;
-    border-bottom: 0.5px solid var(--gold-light);
-    cursor: pointer;
-    transition: background 0.2s ease;
-    -webkit-tap-highlight-color: transparent;
   }
 
-  .rec-song:hover { background: var(--warm-bg); }
-  .rec-song:last-child { border-bottom: none; }
+  .rec-card {
+    background: var(--warm-bg);
+    border: 0.5px solid var(--gold-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    animation: revealUp 0.4s ease forwards;
+  }
 
-  .rec-song-number {
+  .rec-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(201,169,110,0.15);
+  }
+
+  .rec-card-art {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+  }
+
+  .rec-card-info {
+    padding: 8px 10px;
+  }
+
+  .rec-card-title {
     font-family: 'Cormorant Garamond', serif;
     font-size: 14px;
-    color: var(--gold);
-    width: 18px;
-    text-align: center;
-    flex-shrink: 0;
+    font-weight: 500;
+    color: var(--dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .rec-song .song-info { flex: 1; text-align: left; }
-  .rec-song .song-title { font-size: 14px; }
-  .rec-song .song-artist { font-size: 9px; }
+  .rec-card-artist {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 8px;
+    font-weight: 300;
+    color: var(--soft);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rec-card-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 7px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border-top: 0.5px solid var(--gold-light);
+    transition: all 0.3s ease;
+  }
+
+  .rec-card:hover .rec-card-add {
+    background: var(--gold);
+    color: var(--cream);
+  }
+
+  .rec-loading {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--soft);
+    padding: 20px 0;
+  }
+
+  @media (max-width: 380px) {
+    .rec-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .mood-btn { padding: 8px 12px; font-size: 8px; }
+  }
 
   /* ───── Floating particles ───── */
   .particles {
@@ -1561,38 +1663,19 @@
     <div class="section-title">Request a Song</div>
     <div class="section-subtitle">Help us build the perfect wedding playlist on Spotify</div>
 
+    <!-- Mood Toggle -->
+    <div class="mood-toggle">
+      <button class="mood-btn active" onclick="setMood('slow-dance', this)"><span class="mood-emoji"></span>Slow Dance</button>
+      <button class="mood-btn" onclick="setMood('good-times', this)"><span class="mood-emoji"></span>Good Times</button>
+      <button class="mood-btn" onclick="setMood('two-steppin', this)"><span class="mood-emoji"></span>Two Steppin'</button>
+      <button class="mood-btn" onclick="setMood('dance-floor', this)"><span class="mood-emoji"></span>Dance Floor</button>
+    </div>
+
     <!-- Recommended Songs -->
     <div class="recommended-section">
-      <div class="recommended-title">Need Inspiration?</div>
-      <div class="rec-song" onclick="addRecSong('Thinking Out Loud','Ed Sheeran','34gCuhDGsG4bRPIf9bb02f')">
-        <div class="rec-song-number">1</div>
-        <div class="song-info"><div class="song-title">Thinking Out Loud</div><div class="song-artist">Ed Sheeran</div></div>
-        <button class="song-add-btn" type="button">+</button>
-      </div>
-      <div class="rec-song" onclick="addRecSong('Perfect','Ed Sheeran','0tgVpDi06FyKpA1z0VMD4v')">
-        <div class="rec-song-number">2</div>
-        <div class="song-info"><div class="song-title">Perfect</div><div class="song-artist">Ed Sheeran</div></div>
-        <button class="song-add-btn" type="button">+</button>
-      </div>
-      <div class="rec-song" onclick="addRecSong('All of Me','John Legend','3U4isOIWM3VvDubwSI3y7a')">
-        <div class="rec-song-number">3</div>
-        <div class="song-info"><div class="song-title">All of Me</div><div class="song-artist">John Legend</div></div>
-        <button class="song-add-btn" type="button">+</button>
-      </div>
-      <div class="rec-song" onclick="addRecSong('At Last','Etta James','3EYNG0mERFkaPMOgqJHKAl')">
-        <div class="rec-song-number">4</div>
-        <div class="song-info"><div class="song-title">At Last</div><div class="song-artist">Etta James</div></div>
-        <button class="song-add-btn" type="button">+</button>
-      </div>
-      <div class="rec-song" onclick="addRecSong('Marry You','Bruno Mars','2cYAkfadp0YwRmWsYhLOD0')">
-        <div class="rec-song-number">5</div>
-        <div class="song-info"><div class="song-title">Marry You</div><div class="song-artist">Bruno Mars</div></div>
-        <button class="song-add-btn" type="button">+</button>
-      </div>
-      <div class="rec-song" onclick="addRecSong('I Gotta Feeling','The Black Eyed Peas','2H1047e0oMSj10dgp7p2VG')">
-        <div class="rec-song-number">6</div>
-        <div class="song-info"><div class="song-title">I Gotta Feeling</div><div class="song-artist">The Black Eyed Peas</div></div>
-        <button class="song-add-btn" type="button">+</button>
+      <div class="recommended-title">Suggested for You</div>
+      <div class="rec-grid" id="rec-grid">
+        <div class="rec-loading">Loading recommendations...</div>
       </div>
     </div>
 
@@ -1939,10 +2022,55 @@ function togglePreview(btn, url) {
   };
 }
 
-// ─── Recommended Songs ───
-function addRecSong(song, artist, spotifyId) {
-  addSong(song, artist, spotifyId, '');
+// ─── Mood Recommendations ───
+let currentMood = 'slow-dance';
+
+function setMood(mood, btn) {
+  currentMood = mood;
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadRecommendations(mood);
 }
+
+async function loadRecommendations(mood) {
+  const grid = document.getElementById('rec-grid');
+  grid.innerHTML = '<div class="rec-loading">Finding songs...</div>';
+
+  try {
+    const res = await fetch('/api/spotify?recommend=' + mood);
+    const data = await res.json();
+
+    if (data.success && data.tracks && data.tracks.length > 0) {
+      grid.innerHTML = data.tracks.slice(0, 6).map(track => `
+        <div class="rec-card" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artist)}', '${track.id}', '${track.albumArtSmall}')">
+          <img class="rec-card-art" src="${track.albumArt}" alt="" loading="lazy">
+          <div class="rec-card-info">
+            <div class="rec-card-title">${escapeHtml(track.name)}</div>
+            <div class="rec-card-artist">${escapeHtml(track.artist)}</div>
+          </div>
+          <div class="rec-card-add">+ Add to Playlist</div>
+        </div>
+      `).join('');
+    } else {
+      grid.innerHTML = '<div class="rec-loading">No recommendations found</div>';
+    }
+  } catch (err) {
+    console.error('Recommendations error:', err);
+    grid.innerHTML = '<div class="rec-loading">Could not load recommendations</div>';
+  }
+}
+
+// Load initial recommendations when music section becomes visible
+const musicObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting) {
+    loadRecommendations(currentMood);
+    musicObserver.disconnect();
+  }
+}, { threshold: 0.2 });
+setTimeout(() => {
+  const musicEl = document.getElementById('music');
+  if (musicEl) musicObserver.observe(musicEl);
+}, 1000);
 
 async function addSong(song, artist, spotifyId, albumArt) {
   const name = 'Guest';
