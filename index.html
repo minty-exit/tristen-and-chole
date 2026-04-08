@@ -1247,7 +1247,7 @@
     transform: scaleY(-1);
   }
 
-  /* ───── Song preview ───── */
+  /* ───── Song preview (Spotify embed) ───── */
   .preview-btn {
     flex-shrink: 0;
     width: 32px;
@@ -1266,7 +1266,7 @@
     margin-right: 4px;
   }
 
-  .preview-btn:hover, .preview-btn.playing {
+  .preview-btn:hover, .preview-btn.active {
     background: var(--gold);
     color: var(--cream);
   }
@@ -1275,6 +1275,21 @@
     width: 12px;
     height: 12px;
     fill: currentColor;
+  }
+
+  .spotify-preview {
+    width: 100%;
+    margin: 8px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    animation: revealUp 0.3s ease forwards;
+  }
+
+  .spotify-preview iframe {
+    width: 100%;
+    height: 80px;
+    border: none;
+    border-radius: 8px;
   }
 
   /* ───── Mood Toggle ───── */
@@ -1965,13 +1980,16 @@ async function searchSpotify(query) {
       results.innerHTML = data.tracks.items.map(track => {
         const art = track.album.images[2]?.url || track.album.images[0]?.url || '';
         return `
-        <div class="song-result" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artists[0].name)}', '${track.id}', '${art}')">
-          <img src="${art}" alt="">
-          <div class="song-info">
-            <div class="song-title">${escapeHtml(track.name)}</div>
-            <div class="song-artist">${escapeHtml(track.artists.map(a => a.name).join(', '))}</div>
+        <div class="song-result-wrap" id="wrap-${track.id}">
+          <div class="song-result">
+            <button class="preview-btn" onclick="event.stopPropagation();toggleEmbed('${track.id}')" type="button"><svg viewBox="0 0 12 12"><polygon points="2,0 12,6 2,12"/></svg></button>
+            <img src="${art}" alt="">
+            <div class="song-info" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artists[0].name)}', '${track.id}', '${art}')">
+              <div class="song-title">${escapeHtml(track.name)}</div>
+              <div class="song-artist">${escapeHtml(track.artists.map(a => a.name).join(', '))}</div>
+            </div>
+            <button class="song-add-btn" type="button" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artists[0].name)}', '${track.id}', '${art}')">+</button>
           </div>
-          <button class="song-add-btn" type="button">+</button>
         </div>`;
       }).join('');
     } else {
@@ -1984,40 +2002,38 @@ async function searchSpotify(query) {
 
 function escapeAttr(s) { return s.replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 
-// ─── Song Preview ───
-let currentAudio = null;
-let currentBtn = null;
+// ─── Song Preview (Spotify Embed) ───
+let currentEmbedId = null;
 
-function togglePreview(btn, url) {
-  if (currentAudio && currentBtn === btn) {
-    currentAudio.pause();
-    currentAudio = null;
-    btn.classList.remove('playing');
-    btn.innerHTML = '<svg viewBox="0 0 12 12"><polygon points="2,0 12,6 2,12"/></svg>';
-    currentBtn = null;
-    return;
-  }
+function toggleEmbed(trackId) {
+  const wrap = document.getElementById('wrap-' + trackId);
+  const existing = wrap.querySelector('.spotify-preview');
+  const btn = wrap.querySelector('.preview-btn');
 
-  if (currentAudio) {
-    currentAudio.pause();
-    if (currentBtn) {
-      currentBtn.classList.remove('playing');
-      currentBtn.innerHTML = '<svg viewBox="0 0 12 12"><polygon points="2,0 12,6 2,12"/></svg>';
+  // Close current embed if open
+  if (currentEmbedId && currentEmbedId !== trackId) {
+    const oldWrap = document.getElementById('wrap-' + currentEmbedId);
+    if (oldWrap) {
+      const oldEmbed = oldWrap.querySelector('.spotify-preview');
+      const oldBtn = oldWrap.querySelector('.preview-btn');
+      if (oldEmbed) oldEmbed.remove();
+      if (oldBtn) oldBtn.classList.remove('active');
     }
   }
 
-  currentAudio = new Audio(url);
-  currentBtn = btn;
-  btn.classList.add('playing');
-  btn.innerHTML = '<svg viewBox="0 0 12 12"><rect x="1" y="0" width="4" height="12"/><rect x="7" y="0" width="4" height="12"/></svg>';
-  currentAudio.volume = 0.5;
-  currentAudio.play();
-  currentAudio.onended = () => {
-    btn.classList.remove('playing');
-    btn.innerHTML = '<svg viewBox="0 0 12 12"><polygon points="2,0 12,6 2,12"/></svg>';
-    currentAudio = null;
-    currentBtn = null;
-  };
+  // Toggle this one
+  if (existing) {
+    existing.remove();
+    btn.classList.remove('active');
+    currentEmbedId = null;
+  } else {
+    const preview = document.createElement('div');
+    preview.className = 'spotify-preview';
+    preview.innerHTML = `<iframe src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+    wrap.appendChild(preview);
+    btn.classList.add('active');
+    currentEmbedId = trackId;
+  }
 }
 
 // ─── Mood Recommendations ───
