@@ -81,118 +81,88 @@ export default async function handler(req, res) {
     }
   }
 
-  // ─── Recommendations by mood (using search since /recommendations is deprecated) ───
+  // ─── Recommendations by mood (using /recommendations + playlist seed tracks) ───
   if (recMood) {
     try {
       const token = await getToken(false);
+      const playlistId = process.env.SPOTIFY_PLAYLIST_ID;
+      let seedTracks = [];
 
-      // Curated song lists by mood — real songs people actually know
-      const moods = {
-        'slow-dance': [
-          'Thinking Out Loud Ed Sheeran',
-          'Perfect Ed Sheeran',
-          'All of Me John Legend',
-          'At Last Etta James',
-          'Make You Feel My Love Adele',
-          'A Thousand Years Christina Perri',
-          'Unchained Melody Righteous Brothers',
-          'Can\'t Help Falling in Love Elvis',
-          'You Are the Best Thing Ray LaMontagne',
-          'I Don\'t Want to Miss a Thing Aerosmith',
-          'Amazed Lonestar',
-          'Bless the Broken Road Rascal Flatts',
-          'Then Brad Paisley',
-          'From the Ground Up Dan and Shay',
-          'Speechless Dan and Shay'
-        ],
-        'good-times': [
-          'Uptown Funk Bruno Mars',
-          'Happy Pharrell Williams',
-          'Shut Up and Dance Walk the Moon',
-          'I Gotta Feeling Black Eyed Peas',
-          'Can\'t Stop the Feeling Justin Timberlake',
-          'Sugar Maroon 5',
-          'Marry You Bruno Mars',
-          'Love on Top Beyonce',
-          '24K Magic Bruno Mars',
-          'Levitating Dua Lipa',
-          'Shake It Off Taylor Swift',
-          'Dancing Queen ABBA',
-          'Don\'t Stop Believin Journey',
-          'Sweet Caroline Neil Diamond',
-          'Mr Brightside Killers'
-        ],
-        'two-steppin': [
-          'Cruise Florida Georgia Line',
-          'Body Like a Back Road Sam Hunt',
-          'Chicken Fried Zac Brown Band',
-          'Drunk on You Luke Bryan',
-          'Barefoot Blue Jean Night Jake Owen',
-          'House Party Sam Hunt',
-          'Country Girl Shake It Luke Bryan',
-          'Dirt Road Anthem Jason Aldean',
-          'Wagon Wheel Darius Rucker',
-          'Tennessee Whiskey Chris Stapleton',
-          'Die a Happy Man Thomas Rhett',
-          'Tequila Dan and Shay',
-          'Buy Me a Boat Chris Janson',
-          'Springsteen Eric Church',
-          'Beers and Sunshine Darius Rucker'
-        ],
-        'dance-floor': [
-          'Yeah Usher',
-          'Get Low Lil Jon',
-          'In Da Club 50 Cent',
-          'Wobble Baby V.I.C.',
-          'Cupid Shuffle Cupid',
-          'Cha Cha Slide DJ Casper',
-          'Blinding Lights Weeknd',
-          'Dynamite BTS',
-          'Party Rock Anthem LMFAO',
-          'Timber Pitbull Kesha',
-          'Sexy Back Justin Timberlake',
-          'Crazy in Love Beyonce',
-          'Lose Yourself to Dance Daft Punk',
-          'Hotline Bling Drake',
-          'Old Town Road Lil Nas X'
-        ]
-      };
-
-      const songList = moods[recMood] || moods['good-times'];
-
-      // Shuffle the list
-      for (let i = songList.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [songList[i], songList[j]] = [songList[j], songList[i]];
-      }
-
-      // Search for 8 random songs from the list
-      const allTracks = [];
-      const picks = songList.slice(0, 8);
-
-      for (const q of picks) {
+      // Pull last few tracks from the playlist to use as seeds
+      if (playlistId) {
         try {
-          const searchRes = await fetch(
-            `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=1`,
-            { headers: { 'Authorization': 'Bearer ' + token } }
-          );
-          const searchData = await searchRes.json();
-
-          if (searchData.tracks?.items?.[0]) {
-            const t = searchData.tracks.items[0];
-            allTracks.push({
-              id: t.id,
-              name: t.name,
-              artist: t.artists.map(a => a.name).join(', '),
-              albumArt: t.album.images[1]?.url || t.album.images[0]?.url || '',
-              albumArtSmall: t.album.images[2]?.url || t.album.images[0]?.url || '',
-              preview: t.preview_url || ''
-            });
+          const userToken = await getToken(true);
+          const plRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items?limit=10&fields=items(track(id,artists(id)))`, {
+            headers: { 'Authorization': 'Bearer ' + userToken }
+          });
+          const plData = await plRes.json();
+          if (plData.items) {
+            seedTracks = plData.items.map(i => i.track?.id).filter(Boolean);
+            // Shuffle and pick up to 3
+            for (let i = seedTracks.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [seedTracks[i], seedTracks[j]] = [seedTracks[j], seedTracks[i]];
+            }
+            seedTracks = seedTracks.slice(0, 3);
           }
         } catch (e) {}
       }
 
-      return res.status(200).json({ success: true, tracks: allTracks });
+      // Mood configs with genre seeds and tuning
+      const moods = {
+        'slow-dance': {
+          genres: ['romance', 'r-n-b'],
+          params: { target_energy: 0.3, target_valence: 0.5, target_danceability: 0.4, min_popularity: 50 }
+        },
+        'good-times': {
+          genres: ['pop', 'happy'],
+          params: { target_energy: 0.7, target_valence: 0.8, target_danceability: 0.7, min_popularity: 60 }
+        },
+        'two-steppin': {
+          genres: ['country'],
+          params: { target_energy: 0.6, target_valence: 0.7, target_danceability: 0.65, min_popularity: 50 }
+        },
+        'dance-floor': {
+          genres: ['dance', 'party'],
+          params: { target_energy: 0.85, target_valence: 0.8, target_danceability: 0.85, min_popularity: 60 }
+        }
+      };
+
+      const mood = moods[recMood] || moods['good-times'];
+
+      const params = new URLSearchParams({
+        limit: 10,
+        ...mood.params
+      });
+
+      // Use seed tracks from playlist + fill with genre seeds (max 5 total)
+      if (seedTracks.length > 0) {
+        params.set('seed_tracks', seedTracks.join(','));
+        // Fill remaining seeds with genres (5 total max)
+        const genreSlots = Math.min(5 - seedTracks.length, mood.genres.length);
+        if (genreSlots > 0) {
+          params.set('seed_genres', mood.genres.slice(0, genreSlots).join(','));
+        }
+      } else {
+        // No playlist tracks yet, just use genres
+        params.set('seed_genres', mood.genres.join(','));
+      }
+
+      const recRes = await fetch(`https://api.spotify.com/v1/recommendations?${params}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const recData = await recRes.json();
+
+      const tracks = (recData.tracks || []).map(t => ({
+        id: t.id,
+        name: t.name,
+        artist: t.artists.map(a => a.name).join(', '),
+        albumArt: t.album.images[1]?.url || t.album.images[0]?.url || '',
+        albumArtSmall: t.album.images[2]?.url || t.album.images[0]?.url || '',
+        preview: t.preview_url || ''
+      }));
+
+      return res.status(200).json({ success: true, tracks, seeded: seedTracks.length > 0 });
     } catch (err) {
       return res.status(500).json({ success: false, error: err.message });
     }
