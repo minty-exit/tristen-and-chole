@@ -65,69 +65,113 @@ export default async function handler(req, res) {
     try {
       const token = await getToken(false);
 
-      // Mood search queries — multiple searches to get variety
+      // Curated song lists by mood — real songs people actually know
       const moods = {
         'slow-dance': [
-          'first dance wedding love',
-          'romantic slow dance',
-          'wedding love song ballad'
+          'Thinking Out Loud Ed Sheeran',
+          'Perfect Ed Sheeran',
+          'All of Me John Legend',
+          'At Last Etta James',
+          'Make You Feel My Love Adele',
+          'A Thousand Years Christina Perri',
+          'Unchained Melody Righteous Brothers',
+          'Can\'t Help Falling in Love Elvis',
+          'You Are the Best Thing Ray LaMontagne',
+          'I Don\'t Want to Miss a Thing Aerosmith',
+          'Amazed Lonestar',
+          'Bless the Broken Road Rascal Flatts',
+          'Then Brad Paisley',
+          'From the Ground Up Dan and Shay',
+          'Speechless Dan and Shay'
         ],
         'good-times': [
-          'feel good wedding party',
-          'happy upbeat celebration',
-          'wedding fun sing along'
+          'Uptown Funk Bruno Mars',
+          'Happy Pharrell Williams',
+          'Shut Up and Dance Walk the Moon',
+          'I Gotta Feeling Black Eyed Peas',
+          'Can\'t Stop the Feeling Justin Timberlake',
+          'Sugar Maroon 5',
+          'Marry You Bruno Mars',
+          'Love on Top Beyonce',
+          '24K Magic Bruno Mars',
+          'Levitating Dua Lipa',
+          'Shake It Off Taylor Swift',
+          'Dancing Queen ABBA',
+          'Don\'t Stop Believin Journey',
+          'Sweet Caroline Neil Diamond',
+          'Mr Brightside Killers'
         ],
         'two-steppin': [
-          'country wedding dance',
-          'country love song wedding',
-          'country two step dance'
+          'Cruise Florida Georgia Line',
+          'Body Like a Back Road Sam Hunt',
+          'Chicken Fried Zac Brown Band',
+          'Drunk on You Luke Bryan',
+          'Barefoot Blue Jean Night Jake Owen',
+          'House Party Sam Hunt',
+          'Country Girl Shake It Luke Bryan',
+          'Dirt Road Anthem Jason Aldean',
+          'Wagon Wheel Darius Rucker',
+          'Tennessee Whiskey Chris Stapleton',
+          'Die a Happy Man Thomas Rhett',
+          'Tequila Dan and Shay',
+          'Buy Me a Boat Chris Janson',
+          'Springsteen Eric Church',
+          'Beers and Sunshine Darius Rucker'
         ],
         'dance-floor': [
-          'dance party hits wedding',
-          'wedding reception dance',
-          'party dance floor hits'
+          'Yeah Usher',
+          'Get Low Lil Jon',
+          'In Da Club 50 Cent',
+          'Wobble Baby V.I.C.',
+          'Cupid Shuffle Cupid',
+          'Cha Cha Slide DJ Casper',
+          'Blinding Lights Weeknd',
+          'Dynamite BTS',
+          'Party Rock Anthem LMFAO',
+          'Timber Pitbull Kesha',
+          'Sexy Back Justin Timberlake',
+          'Crazy in Love Beyonce',
+          'Lose Yourself to Dance Daft Punk',
+          'Hotline Bling Drake',
+          'Old Town Road Lil Nas X'
         ]
       };
 
-      const queries = moods[recMood] || moods['good-times'];
+      const songList = moods[recMood] || moods['good-times'];
 
-      // Run multiple searches and combine results
+      // Shuffle the list
+      for (let i = songList.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [songList[i], songList[j]] = [songList[j], songList[i]];
+      }
+
+      // Search for 8 random songs from the list
       const allTracks = [];
-      const seenIds = new Set();
+      const picks = songList.slice(0, 8);
 
-      for (const q of queries) {
+      for (const q of picks) {
         try {
           const searchRes = await fetch(
-            `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=10`,
+            `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=track&limit=1`,
             { headers: { 'Authorization': 'Bearer ' + token } }
           );
           const searchData = await searchRes.json();
 
-          if (searchData.tracks?.items) {
-            for (const t of searchData.tracks.items) {
-              if (!seenIds.has(t.id)) {
-                seenIds.add(t.id);
-                allTracks.push({
-                  id: t.id,
-                  name: t.name,
-                  artist: t.artists.map(a => a.name).join(', '),
-                  albumArt: t.album.images[1]?.url || t.album.images[0]?.url || '',
-                  albumArtSmall: t.album.images[2]?.url || t.album.images[0]?.url || '',
-                  preview: t.preview_url || ''
-                });
-              }
-            }
+          if (searchData.tracks?.items?.[0]) {
+            const t = searchData.tracks.items[0];
+            allTracks.push({
+              id: t.id,
+              name: t.name,
+              artist: t.artists.map(a => a.name).join(', '),
+              albumArt: t.album.images[1]?.url || t.album.images[0]?.url || '',
+              albumArtSmall: t.album.images[2]?.url || t.album.images[0]?.url || '',
+              preview: t.preview_url || ''
+            });
           }
         } catch (e) {}
       }
 
-      // Shuffle and take 8
-      for (let i = allTracks.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [allTracks[i], allTracks[j]] = [allTracks[j], allTracks[i]];
-      }
-
-      return res.status(200).json({ success: true, tracks: allTracks.slice(0, 8) });
+      return res.status(200).json({ success: true, tracks: allTracks });
     } catch (err) {
       return res.status(500).json({ success: false, error: err.message });
     }
