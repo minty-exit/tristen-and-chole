@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       const token = await getToken(true);
 
       // Check if track already exists in playlist
-      const plRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items?limit=50&fields=items(track(id)),next`, {
+      const plRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items?limit=50`, {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const plData = await plRes.json();
