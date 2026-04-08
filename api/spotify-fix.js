@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     results.makePublicStatus = updateRes.status;
 
     // Now try adding a track
-    const addRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+    const addRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items`, {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + token,

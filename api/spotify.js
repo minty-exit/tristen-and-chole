@@ -48,7 +48,7 @@ export default async function handler(req, res) {
     }
     try {
       const token = await getToken(true);
-      const addRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+      const addRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items`, {
         method: 'POST',
         headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
         body: JSON.stringify({ uris: [`spotify:track:${addTrack}`] })
@@ -71,7 +71,7 @@ export default async function handler(req, res) {
       if (playlistId) {
         try {
           const userToken = await getToken(true);
-          const plRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=5&fields=items(track(id))`, {
+          const plRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items?limit=5&fields=items(track(id))`, {
             headers: { 'Authorization': 'Bearer ' + userToken }
           });
           const plData = await plRes.json();
