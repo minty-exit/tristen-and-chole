@@ -1203,7 +1203,6 @@
   <div class="nav-dot active" onclick="scrollToSection('invite')"><span class="nav-dot-label">Invitation</span></div>
   <div class="nav-dot" onclick="scrollToSection('countdown')"><span class="nav-dot-label">Countdown</span></div>
   <div class="nav-dot" onclick="scrollToSection('rsvp-section')"><span class="nav-dot-label">RSVP</span></div>
-  <div class="nav-dot" onclick="scrollToSection('guestbook')"><span class="nav-dot-label">Guest Book</span></div>
   <div class="nav-dot" onclick="scrollToSection('music')"><span class="nav-dot-label">Music</span></div>
   <div class="nav-dot" onclick="scrollToSection('photos')"><span class="nav-dot-label">Photos</span></div>
 </div>
@@ -1327,28 +1326,6 @@
     </form>
   </div>
 
-  <!-- ─── Guest Book ─── -->
-  <div class="section-card" id="guestbook">
-    <div class="section-title">Guest Book</div>
-    <div class="section-subtitle">Leave your love &amp; well wishes</div>
-    <div class="guestbook-entries" id="guestbook-entries">
-      <div class="gb-empty" id="gb-empty">Be the first to sign the guest book</div>
-    </div>
-    <div class="mini-divider"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
-    <form id="guestbook-form" style="margin-top: 24px;">
-      <div class="form-group">
-        <label class="form-label">Your Name</label>
-        <input type="text" class="form-input" name="gb-name" required placeholder="Your Name">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Your Message</label>
-        <textarea class="form-textarea" name="gb-message" required placeholder="Write something beautiful..."></textarea>
-      </div>
-      <button type="submit" class="submit-btn">Sign Guest Book</button>
-      <div class="form-message" id="gb-message"></div>
-    </form>
-  </div>
-
   <!-- ─── Song Requests ─── -->
   <div class="section-card" id="music">
     <div class="section-title">Request a Song</div>
@@ -1447,7 +1424,6 @@ function openInvitation() {
     invitation.style.display = 'flex';
     createParticles();
     startCountdown();
-    loadGuestBook();
     loadSongRequests();
     loadPhotos();
     observeSections();
@@ -1578,64 +1554,7 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
   }
 });
 
-// ─── Guest Book ───
-async function loadGuestBook() {
-  if (API_URL === 'YOUR_GOOGLE_SCRIPT_URL') return;
-  try {
-    const res = await apiCall({ action: 'getGuestBook' });
-    if (res.success && res.entries.length > 0) {
-      document.getElementById('gb-empty').style.display = 'none';
-      const container = document.getElementById('guestbook-entries');
-      res.entries.forEach(entry => {
-        container.appendChild(createGBEntry(entry));
-      });
-    }
-  } catch (err) { console.log('Guest book load error:', err); }
-}
-
-function createGBEntry(entry) {
-  const div = document.createElement('div');
-  div.className = 'gb-entry';
-  div.innerHTML = `
-    <div class="gb-name">${escapeHtml(entry.name)}</div>
-    <div class="gb-message">"${escapeHtml(entry.message)}"</div>
-    <div class="gb-date">${entry.timestamp}</div>`;
-  return div;
-}
-
 function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-
-document.getElementById('guestbook-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const form = e.target;
-  const btn = form.querySelector('.submit-btn');
-  const msg = document.getElementById('gb-message');
-  const name = form.querySelector('[name="gb-name"]').value.trim();
-  const message = form.querySelector('[name="gb-message"]').value.trim();
-  if (!name || !message) return;
-
-  btn.textContent = 'Signing...'; btn.disabled = true;
-  msg.className = 'form-message';
-
-  try {
-    const res = await apiCall({ action: 'submitGuestBook', name, message });
-    if (res.success) {
-      msg.textContent = 'Thank you for signing our guest book!';
-      msg.classList.add('show');
-      document.getElementById('gb-empty').style.display = 'none';
-      const container = document.getElementById('guestbook-entries');
-      const entry = createGBEntry({ name, message, timestamp: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) });
-      container.insertBefore(entry, container.firstChild);
-      form.reset();
-      btn.textContent = 'Signed!';
-      setTimeout(() => { btn.textContent = 'Sign Guest Book'; btn.disabled = false; msg.classList.remove('show'); }, 3000);
-    } else { throw new Error(res.error); }
-  } catch (err) {
-    msg.textContent = 'Something went wrong. Please try again.';
-    msg.className = 'form-message show error';
-    btn.textContent = 'Sign Guest Book'; btn.disabled = false;
-  }
-});
 
 // ─── Spotify Search ───
 let searchTimeout = null;
