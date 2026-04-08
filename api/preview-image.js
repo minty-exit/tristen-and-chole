@@ -3,16 +3,7 @@ export default async function handler(req, res) {
   const preset = 'wedding';
 
   // Check if we already uploaded
-  const existingUrl = `https://res.cloudinary.com/${cloud}/image/upload/og-preview.png`;
-
-  // Try to fetch existing image
-  const check = await fetch(existingUrl, { method: 'HEAD' }).catch(() => null);
-  if (check && check.ok) {
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
-    res.redirect(302, existingUrl);
-    return;
-  }
+  // Force regenerate by using a versioned public_id
 
   // Upload SVG as PNG to Cloudinary
   const svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
@@ -22,7 +13,7 @@ export default async function handler(req, res) {
     <text x="570" y="235" font-family="Georgia, serif" font-size="42" fill="#c9a96e" font-style="italic">T</text>
     <text x="594" y="228" font-family="Georgia, serif" font-size="18" fill="#c9a96e" font-style="italic" opacity="0.7">&amp;</text>
     <text x="608" y="235" font-family="Georgia, serif" font-size="42" fill="#c9a96e" font-style="italic">C</text>
-    <text x="600" y="360" font-family="Georgia, serif" font-size="52" fill="#1a1512" font-style="italic" text-anchor="middle">Tristen &amp; Chloe</text>
+    <text x="600" y="360" font-family="Georgia, serif" font-size="52" fill="#1a1512" font-style="italic" text-anchor="middle">Tristen &amp; Chloe&apos;</text>
     <line x1="520" y1="390" x2="680" y2="390" stroke="#c9a96e" stroke-width="1"/>
     <text x="600" y="430" font-family="Arial, sans-serif" font-size="18" fill="#5c4f3d" text-anchor="middle" letter-spacing="6">YOU RE INVITED</text>
     <text x="600" y="470" font-family="Georgia, serif" font-size="22" fill="#7a6d5c" text-anchor="middle">June 13, 2026</text>
@@ -32,7 +23,7 @@ export default async function handler(req, res) {
     const formData = new URLSearchParams();
     formData.append('file', 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64'));
     formData.append('upload_preset', preset);
-    formData.append('public_id', 'og-preview');
+    formData.append('public_id', 'og-preview-v2');
 
     const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloud}/image/upload`, {
       method: 'POST',
