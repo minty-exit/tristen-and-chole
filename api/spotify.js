@@ -54,14 +54,15 @@ export default async function handler(req, res) {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const plData = await plRes.json();
-      const existingIds = (plData.items || []).map(i => i.track?.id).filter(Boolean);
+      // Feb 2026: response uses 'item' instead of 'track'
+      const existingIds = (plData.items || []).map(i => (i.item?.id || i.track?.id)).filter(Boolean);
 
       // Check additional pages if playlist has 50+ songs
       let nextUrl = plData.next;
       while (nextUrl) {
         const nextRes = await fetch(nextUrl, { headers: { 'Authorization': 'Bearer ' + token } });
         const nextData = await nextRes.json();
-        existingIds.push(...(nextData.items || []).map(i => i.track?.id).filter(Boolean));
+        existingIds.push(...(nextData.items || []).map(i => (i.item?.id || i.track?.id)).filter(Boolean));
         nextUrl = nextData.next;
       }
 
@@ -101,9 +102,10 @@ export default async function handler(req, res) {
           if (plData.items) {
             const seenArtists = new Set();
             for (const item of plData.items) {
-              if (item.track?.id) playlistTrackIds.add(item.track.id);
-              if (item.track?.artists) {
-                for (const a of item.track.artists) {
+              const track = item.item || item.track;
+              if (track?.id) playlistTrackIds.add(track.id);
+              if (track?.artists) {
+                for (const a of track.artists) {
                   if (a.id && !seenArtists.has(a.id)) {
                     seenArtists.add(a.id);
                     playlistArtistIds.push(a.id);
