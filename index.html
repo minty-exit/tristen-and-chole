@@ -99,6 +99,16 @@
     padding: 0 20px 4px;
   }
 
+  /* ───── Linen texture background ───── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
   /* ───── Main invitation scroll ───── */
   .invitation-scroll {
     width: 100%;
@@ -109,6 +119,7 @@
     align-items: center;
     padding: 32px 20px 60px;
     background: linear-gradient(180deg, var(--warm-bg) 0%, #ede7df 50%, var(--warm-bg) 100%);
+    position: relative;
   }
 
   /* ───── Section navigation dots ───── */
@@ -1131,6 +1142,183 @@
     transform: scale(1.3);
   }
 
+  /* ───── Monogram ───── */
+  .monogram {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+    opacity: 0;
+    animation: revealUp 1s ease forwards;
+    animation-delay: 0.3s;
+  }
+
+  .monogram svg {
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 2px 8px rgba(201,169,110,0.2));
+  }
+
+  .monogram--bottom {
+    margin-top: 28px;
+    margin-bottom: 0;
+    animation: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .monogram--bottom.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .monogram--bottom svg {
+    width: 60px;
+    height: 60px;
+    opacity: 0.5;
+  }
+
+  /* ───── Section divider with hearts ───── */
+  .section-divider {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    gap: 16px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .section-divider.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .heart-icon {
+    animation: heartBeat 3s ease-in-out infinite;
+  }
+
+  @keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.15); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.1); }
+    60% { transform: scale(1); }
+  }
+
+  .divider-vine {
+    flex: 1;
+    max-width: 80px;
+    height: 1px;
+    position: relative;
+  }
+
+  .divider-vine::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  /* ───── Watercolor florals ───── */
+  .floral-accent {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+    pointer-events: none;
+  }
+
+  .floral-accent.visible { opacity: 1; }
+
+  .floral-accent svg {
+    width: 160px;
+    height: 40px;
+  }
+
+  .floral-accent--flip svg {
+    transform: scaleY(-1);
+  }
+
+  /* ───── Song preview ───── */
+  .preview-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--gold);
+    background: none;
+    color: var(--gold);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    margin-right: 4px;
+  }
+
+  .preview-btn:hover, .preview-btn.playing {
+    background: var(--gold);
+    color: var(--cream);
+  }
+
+  .preview-btn svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+  }
+
+  /* ───── Recommended songs ───── */
+  .recommended-section {
+    margin-bottom: 24px;
+  }
+
+  .recommended-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--soft);
+    margin-bottom: 12px;
+  }
+
+  .rec-song {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 4px;
+    border-bottom: 0.5px solid var(--gold-light);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .rec-song:hover { background: var(--warm-bg); }
+  .rec-song:last-child { border-bottom: none; }
+
+  .rec-song-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    color: var(--gold);
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .rec-song .song-info { flex: 1; text-align: left; }
+  .rec-song .song-title { font-size: 14px; }
+  .rec-song .song-artist { font-size: 9px; }
+
   /* ───── Floating particles ───── */
   .particles {
     position: fixed;
@@ -1210,6 +1398,19 @@
 <!-- ═══ Invitation Content ═══ -->
 <div class="invitation-scroll" id="invitation" style="display:none;">
 
+  <!-- ─── Monogram Top ─── -->
+  <div class="monogram">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="46" stroke="#c9a96e" stroke-width="0.8"/>
+      <circle cx="50" cy="50" r="42" stroke="#c9a96e" stroke-width="0.4" opacity="0.5"/>
+      <text x="28" y="62" font-family="Great Vibes, cursive" font-size="32" fill="#c9a96e">T</text>
+      <text x="46" y="55" font-family="Cormorant Garamond, serif" font-size="14" fill="#c9a96e" font-style="italic" opacity="0.7">&amp;</text>
+      <text x="56" y="62" font-family="Great Vibes, cursive" font-size="32" fill="#c9a96e">C</text>
+      <path d="M30 72 Q50 78 70 72" stroke="#c9a96e" stroke-width="0.5" fill="none" opacity="0.5"/>
+      <path d="M30 28 Q50 22 70 28" stroke="#c9a96e" stroke-width="0.5" fill="none" opacity="0.5"/>
+    </svg>
+  </div>
+
   <!-- ─── Invitation Card ─── -->
   <div class="card" id="invite">
     <div class="flourish flourish--tl"><svg viewBox="0 0 56 56" fill="none"><path d="M4 52 C4 26, 26 4, 52 4" stroke="#c9a96e" stroke-width="0.8" fill="none"/><path d="M4 40 C4 18, 18 4, 40 4" stroke="#c9a96e" stroke-width="0.5" fill="none"/><path d="M12 52 C12 30, 30 12, 52 12" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.5"/><circle cx="8" cy="8" r="2" fill="#c9a96e" opacity="0.35"/><circle cx="4" cy="18" r="1" fill="#c9a96e" opacity="0.2"/><circle cx="18" cy="4" r="1" fill="#c9a96e" opacity="0.2"/></svg></div>
@@ -1249,6 +1450,13 @@
     </div>
   </div>
 
+  <!-- Heart divider -->
+  <div class="section-divider">
+    <div class="divider-vine"></div>
+    <svg class="heart-icon" width="20" height="18" viewBox="0 0 20 18" fill="none"><path d="M10 17 C10 17, 1 10, 1 5.5 C1 2.5, 3.5 0, 6 0 C7.5 0, 9 1, 10 2.5 C11 1, 12.5 0, 14 0 C16.5 0, 19 2.5, 19 5.5 C19 10, 10 17, 10 17Z" fill="#c9a96e" opacity="0.4"/></svg>
+    <div class="divider-vine"></div>
+  </div>
+
   <!-- ─── Countdown ─── -->
   <div class="section-card" id="countdown">
     <div class="countdown-title">Counting Down to Forever</div>
@@ -1273,6 +1481,21 @@
         <div class="countdown-label">Seconds</div>
       </div>
     </div>
+  </div>
+
+  <!-- Floral accent -->
+  <div class="floral-accent">
+    <svg viewBox="0 0 200 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 20 Q50 8 100 20 Q150 32 180 20" stroke="#c9a96e" stroke-width="0.6" fill="none" opacity="0.4"/>
+      <path d="M40 20 Q70 12 100 20 Q130 28 160 20" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.3"/>
+      <circle cx="100" cy="20" r="2" fill="#c9a96e" opacity="0.3"/>
+      <path d="M90 16 Q95 10 100 16" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.3"/>
+      <path d="M100 16 Q105 10 110 16" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.3"/>
+      <circle cx="60" cy="18" r="1" fill="#c9a96e" opacity="0.2"/>
+      <circle cx="140" cy="22" r="1" fill="#c9a96e" opacity="0.2"/>
+      <path d="M55 20 Q58 15 62 18" stroke="#c9a96e" stroke-width="0.3" fill="none" opacity="0.25"/>
+      <path d="M138 20 Q141 25 145 22" stroke="#c9a96e" stroke-width="0.3" fill="none" opacity="0.25"/>
+    </svg>
   </div>
 
   <!-- ─── RSVP Form ─── -->
@@ -1326,10 +1549,54 @@
     </form>
   </div>
 
+  <!-- Heart divider -->
+  <div class="section-divider">
+    <div class="divider-vine"></div>
+    <svg class="heart-icon" width="20" height="18" viewBox="0 0 20 18" fill="none"><path d="M10 17 C10 17, 1 10, 1 5.5 C1 2.5, 3.5 0, 6 0 C7.5 0, 9 1, 10 2.5 C11 1, 12.5 0, 14 0 C16.5 0, 19 2.5, 19 5.5 C19 10, 10 17, 10 17Z" fill="#c9a96e" opacity="0.4"/></svg>
+    <div class="divider-vine"></div>
+  </div>
+
   <!-- ─── Song Requests ─── -->
   <div class="section-card" id="music">
     <div class="section-title">Request a Song</div>
-    <div class="section-subtitle">Help us build the perfect playlist</div>
+    <div class="section-subtitle">Help us build the perfect wedding playlist on Spotify</div>
+
+    <!-- Recommended Songs -->
+    <div class="recommended-section">
+      <div class="recommended-title">Need Inspiration?</div>
+      <div class="rec-song" onclick="addRecSong('Thinking Out Loud','Ed Sheeran','34gCuhDGsG4bRPIf9bb02f')">
+        <div class="rec-song-number">1</div>
+        <div class="song-info"><div class="song-title">Thinking Out Loud</div><div class="song-artist">Ed Sheeran</div></div>
+        <button class="song-add-btn" type="button">+</button>
+      </div>
+      <div class="rec-song" onclick="addRecSong('Perfect','Ed Sheeran','0tgVpDi06FyKpA1z0VMD4v')">
+        <div class="rec-song-number">2</div>
+        <div class="song-info"><div class="song-title">Perfect</div><div class="song-artist">Ed Sheeran</div></div>
+        <button class="song-add-btn" type="button">+</button>
+      </div>
+      <div class="rec-song" onclick="addRecSong('All of Me','John Legend','3U4isOIWM3VvDubwSI3y7a')">
+        <div class="rec-song-number">3</div>
+        <div class="song-info"><div class="song-title">All of Me</div><div class="song-artist">John Legend</div></div>
+        <button class="song-add-btn" type="button">+</button>
+      </div>
+      <div class="rec-song" onclick="addRecSong('At Last','Etta James','3EYNG0mERFkaPMOgqJHKAl')">
+        <div class="rec-song-number">4</div>
+        <div class="song-info"><div class="song-title">At Last</div><div class="song-artist">Etta James</div></div>
+        <button class="song-add-btn" type="button">+</button>
+      </div>
+      <div class="rec-song" onclick="addRecSong('Marry You','Bruno Mars','2cYAkfadp0YwRmWsYhLOD0')">
+        <div class="rec-song-number">5</div>
+        <div class="song-info"><div class="song-title">Marry You</div><div class="song-artist">Bruno Mars</div></div>
+        <button class="song-add-btn" type="button">+</button>
+      </div>
+      <div class="rec-song" onclick="addRecSong('I Gotta Feeling','The Black Eyed Peas','2H1047e0oMSj10dgp7p2VG')">
+        <div class="rec-song-number">6</div>
+        <div class="song-info"><div class="song-title">I Gotta Feeling</div><div class="song-artist">The Black Eyed Peas</div></div>
+        <button class="song-add-btn" type="button">+</button>
+      </div>
+    </div>
+
+    <div class="mini-divider" style="margin-bottom:24px;"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
 
     <div class="spotify-search-wrap">
       <input type="text" class="form-input" id="spotify-search" placeholder="Search for a song...">
@@ -1346,8 +1613,21 @@
     <div class="form-message" id="song-message"></div>
   </div>
 
+  <!-- Floral accent -->
+  <div class="floral-accent floral-accent--flip">
+    <svg viewBox="0 0 200 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 20 Q50 8 100 20 Q150 32 180 20" stroke="#c9a96e" stroke-width="0.6" fill="none" opacity="0.4"/>
+      <path d="M40 20 Q70 12 100 20 Q130 28 160 20" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.3"/>
+      <circle cx="100" cy="20" r="2" fill="#c9a96e" opacity="0.3"/>
+      <path d="M90 16 Q95 10 100 16" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.3"/>
+      <path d="M100 16 Q105 10 110 16" stroke="#c9a96e" stroke-width="0.4" fill="none" opacity="0.3"/>
+      <circle cx="60" cy="18" r="1" fill="#c9a96e" opacity="0.2"/>
+      <circle cx="140" cy="22" r="1" fill="#c9a96e" opacity="0.2"/>
+    </svg>
+  </div>
+
   <!-- ─── Photo Gallery ─── -->
-  <div class="section-card" id="photos" style="margin-bottom: 40px;">
+  <div class="section-card" id="photos" style="margin-bottom: 0;">
     <div class="section-title">Photo Gallery</div>
     <div class="section-subtitle">Share your favorite moments</div>
 
@@ -1382,6 +1662,20 @@
     <div class="form-message" id="photo-message"></div>
   </div>
 
+  <!-- Bottom monogram -->
+  <div class="monogram monogram--bottom">
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="46" stroke="#c9a96e" stroke-width="0.8"/>
+      <circle cx="50" cy="50" r="42" stroke="#c9a96e" stroke-width="0.4" opacity="0.5"/>
+      <text x="28" y="62" font-family="Great Vibes, cursive" font-size="32" fill="#c9a96e">T</text>
+      <text x="46" y="55" font-family="Cormorant Garamond, serif" font-size="14" fill="#c9a96e" font-style="italic" opacity="0.7">&amp;</text>
+      <text x="56" y="62" font-family="Great Vibes, cursive" font-size="32" fill="#c9a96e">C</text>
+      <path d="M30 72 Q50 78 70 72" stroke="#c9a96e" stroke-width="0.5" fill="none" opacity="0.5"/>
+      <path d="M30 28 Q50 22 70 28" stroke="#c9a96e" stroke-width="0.5" fill="none" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <div style="padding-bottom: 40px;"></div>
 </div>
 
 <!-- Lightbox -->
@@ -1450,6 +1744,15 @@ function observeSections() {
   }, { threshold: 0.2 });
 
   sections.forEach(s => observer.observe(s));
+
+  // Observe dividers, florals, monograms
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.section-divider, .floral-accent, .monogram--bottom').forEach(el => fadeObserver.observe(el));
 
   // Also observe the invite card for nav dots
   const inviteObs = new IntersectionObserver((entries) => {
@@ -1576,16 +1879,20 @@ async function searchSpotify(query) {
     const data = await res.json();
 
     if (data.tracks && data.tracks.items.length > 0) {
-      results.innerHTML = data.tracks.items.map(track => `
-        <div class="song-result" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artists[0].name)}', '${track.id}', '${track.album.images[2]?.url || track.album.images[0]?.url || ''}')">
-          <img src="${track.album.images[2]?.url || track.album.images[0]?.url || ''}" alt="">
-          <div class="song-info">
+      results.innerHTML = data.tracks.items.map(track => {
+        const art = track.album.images[2]?.url || track.album.images[0]?.url || '';
+        const preview = track.preview_url || '';
+        return `
+        <div class="song-result">
+          ${preview ? `<button class="preview-btn" onclick="event.stopPropagation();togglePreview(this,'${preview}')" type="button"><svg viewBox="0 0 12 12"><polygon points="2,0 12,6 2,12"/></svg></button>` : ''}
+          <img src="${art}" alt="">
+          <div class="song-info" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artists[0].name)}', '${track.id}', '${art}')">
             <div class="song-title">${escapeHtml(track.name)}</div>
             <div class="song-artist">${escapeHtml(track.artists.map(a => a.name).join(', '))}</div>
           </div>
-          <button class="song-add-btn" type="button">+</button>
-        </div>
-      `).join('');
+          <button class="song-add-btn" type="button" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artists[0].name)}', '${track.id}', '${art}')">+</button>
+        </div>`;
+      }).join('');
     } else {
       results.innerHTML = '<div style="padding:16px;font-family:Cormorant Garamond,serif;font-style:italic;color:var(--soft);">No songs found</div>';
     }
@@ -1595,6 +1902,47 @@ async function searchSpotify(query) {
 }
 
 function escapeAttr(s) { return s.replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+// ─── Song Preview ───
+let currentAudio = null;
+let currentBtn = null;
+
+function togglePreview(btn, url) {
+  if (currentAudio && currentBtn === btn) {
+    currentAudio.pause();
+    currentAudio = null;
+    btn.classList.remove('playing');
+    btn.innerHTML = '<svg viewBox="0 0 12 12"><polygon points="2,0 12,6 2,12"/></svg>';
+    currentBtn = null;
+    return;
+  }
+
+  if (currentAudio) {
+    currentAudio.pause();
+    if (currentBtn) {
+      currentBtn.classList.remove('playing');
+      currentBtn.innerHTML = '<svg viewBox="0 0 12 12"><polygon points="2,0 12,6 2,12"/></svg>';
+    }
+  }
+
+  currentAudio = new Audio(url);
+  currentBtn = btn;
+  btn.classList.add('playing');
+  btn.innerHTML = '<svg viewBox="0 0 12 12"><rect x="1" y="0" width="4" height="12"/><rect x="7" y="0" width="4" height="12"/></svg>';
+  currentAudio.volume = 0.5;
+  currentAudio.play();
+  currentAudio.onended = () => {
+    btn.classList.remove('playing');
+    btn.innerHTML = '<svg viewBox="0 0 12 12"><polygon points="2,0 12,6 2,12"/></svg>';
+    currentAudio = null;
+    currentBtn = null;
+  };
+}
+
+// ─── Recommended Songs ───
+function addRecSong(song, artist, spotifyId) {
+  addSong(song, artist, spotifyId, '');
+}
 
 async function addSong(song, artist, spotifyId, albumArt) {
   const name = 'Guest';
