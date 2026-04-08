@@ -1964,16 +1964,14 @@ async function searchSpotify(query) {
     if (data.tracks && data.tracks.items.length > 0) {
       results.innerHTML = data.tracks.items.map(track => {
         const art = track.album.images[2]?.url || track.album.images[0]?.url || '';
-        const preview = track.preview_url || '';
         return `
-        <div class="song-result">
-          ${preview ? `<button class="preview-btn" onclick="event.stopPropagation();togglePreview(this,'${preview}')" type="button"><svg viewBox="0 0 12 12"><polygon points="2,0 12,6 2,12"/></svg></button>` : ''}
+        <div class="song-result" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artists[0].name)}', '${track.id}', '${art}')">
           <img src="${art}" alt="">
-          <div class="song-info" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artists[0].name)}', '${track.id}', '${art}')">
+          <div class="song-info">
             <div class="song-title">${escapeHtml(track.name)}</div>
             <div class="song-artist">${escapeHtml(track.artists.map(a => a.name).join(', '))}</div>
           </div>
-          <button class="song-add-btn" type="button" onclick="addSong('${escapeAttr(track.name)}', '${escapeAttr(track.artists[0].name)}', '${track.id}', '${art}')">+</button>
+          <button class="song-add-btn" type="button">+</button>
         </div>`;
       }).join('');
     } else {
