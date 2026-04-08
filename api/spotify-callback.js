@@ -34,12 +34,37 @@ export default async function handler(req, res) {
       return res.status(500).send(`<h1>Failed to get tokens</h1><pre>${JSON.stringify(tokenData, null, 2)}</pre>`);
     }
 
-    // Test: try to add a track to verify permissions work
-    const playlistId = process.env.SPOTIFY_PLAYLIST_ID || '2N1lXIqTuuyH3YtbMK3FOn';
-    let testResult = 'Not tested';
+    // Get user profile
+    const userRes = await fetch('https://api.spotify.com/v1/me', {
+      headers: { 'Authorization': 'Bearer ' + tokenData.access_token }
+    });
+    const userData = await userRes.json();
 
-    try {
-      const addRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+    // Create a NEW playlist
+    const plRes = await fetch(`https://api.spotify.com/v1/users/${userData.id}/playlists`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + tokenData.access_token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: "Tristen and Chloe's Wedding",
+        description: 'Song requests from our wedding guests',
+        public: true
+      })
+    });
+    const plData = await plRes.json();
+
+    // Test adding a song to the NEW playlist
+    let testResult = 'Playlist creation failed';
+    let newPlaylistId = 'undefined';
+    let playlistUrl = '#';
+
+    if (plData.id) {
+      newPlaylistId = plData.id;
+      playlistUrl = plData.external_urls?.spotify || '#';
+
+      const addRes = await fetch(`https://api.spotify.com/v1/playlists/${newPlaylistId}/tracks`, {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + tokenData.access_token,
@@ -47,25 +72,24 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({ uris: ['spotify:track:34gCuhDGsG4bRPIf9bb02f'] })
       });
-      const addData = await addRes.json();
-      testResult = addRes.status === 201 || addRes.status === 200
-        ? 'SUCCESS - Song added to playlist!'
-        : `FAILED (${addRes.status}): ${JSON.stringify(addData)}`;
-    } catch (e) {
-      testResult = 'Error: ' + e.message;
+      testResult = (addRes.status === 201 || addRes.status === 200)
+        ? 'SUCCESS - Song added!'
+        : `FAILED (${addRes.status})`;
     }
 
     res.status(200).send(`
       <html>
       <body style="font-family:sans-serif;max-width:600px;margin:40px auto;padding:20px;line-height:1.8;">
         <h1>Spotify Connected!</h1>
-        <h2>Playlist Add Test: ${testResult}</h2>
-        <p><strong>Scopes granted:</strong> ${tokenData.scope}</p>
+        <h2>Add Song Test: ${testResult}</h2>
+        <p><strong>Playlist:</strong> <a href="${playlistUrl}" target="_blank">${playlistUrl}</a></p>
         <hr>
         <p><strong>SPOTIFY_REFRESH_TOKEN:</strong></p>
         <textarea style="width:100%;height:80px;font-family:monospace;font-size:11px;" onclick="this.select()">${tokenData.refresh_token}</textarea>
+        <p><strong>SPOTIFY_PLAYLIST_ID:</strong></p>
+        <textarea style="width:100%;height:40px;font-family:monospace;font-size:11px;" onclick="this.select()">${newPlaylistId}</textarea>
         <hr>
-        <p>Update SPOTIFY_REFRESH_TOKEN in Vercel with the value above, then redeploy.</p>
+        <p>Update BOTH values in Vercel Environment Variables, then redeploy.</p>
       </body>
       </html>
     `);
